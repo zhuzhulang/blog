@@ -1,0 +1,107 @@
+<!doctype html><html lang=zh-cn><head><meta charset=utf-8><meta name=viewport content="width=device-width"><script type=application/javascript src=https://zhuzhulang.github.io/blog/js/theme-mode.js></script><link rel=stylesheet href=https://zhuzhulang.github.io/blog/css/frameworks.min.css><link rel=stylesheet href=https://zhuzhulang.github.io/blog/css/github.min.css><link rel=stylesheet href=https://zhuzhulang.github.io/blog/css/github-style.css><link rel=stylesheet href=https://zhuzhulang.github.io/blog/css/light.css><link rel=stylesheet href=https://zhuzhulang.github.io/blog/css/dark.css><link rel=stylesheet href=https://zhuzhulang.github.io/blog/css/syntax.css><title>使用VITS进行语音合成 - 码力全开</title>
+<link rel=icon type=image/x-icon href=https://zhuzhulang.github.io/blog/images/github-mark.png><meta name=theme-color content="#1e2327"><meta name=description content="如何使用VITS模型进行中文语音合成"><meta name=keywords content='blog,ai,in action'><meta name=robots content="noodp"><link rel=canonical href=https://zhuzhulang.github.io/blog/posts/how-to-use-vits-for-speech-synthesis/><meta name=twitter:card content="summary"><meta name=twitter:title content="使用VITS进行语音合成 - 码力全开"><meta name=twitter:description content="如何使用VITS模型进行中文语音合成"><meta name=twitter:site content="https://zhuzhulang.github.io/blog/"><meta name=twitter:creator content><meta name=twitter:image content="https://zhuzhulang.github.io/blog/"><meta property="og:type" content="article"><meta property="og:title" content="使用VITS进行语音合成 - 码力全开"><meta property="og:description" content="如何使用VITS模型进行中文语音合成"><meta property="og:url" content="https://zhuzhulang.github.io/blog/posts/how-to-use-vits-for-speech-synthesis/"><meta property="og:site_name" content="使用VITS进行语音合成"><meta property="og:image" content="https://zhuzhulang.github.io/blog/"><meta property="og:image:width" content="2048"><meta property="og:image:height" content="1024"><meta property="article:published_time" content="2025-04-26 09:13:13 +0800 CST"></head><body><div style=position:relative><header class="Header js-details-container Details px-3 px-md-4 px-lg-5 flex-wrap flex-md-nowrap open Details--on"><div class="Header-item mobile-none" style=margin-top:-4px;margin-bottom:-4px><a class=Header-link href=https://zhuzhulang.github.io/blog/><img class=octicon height=32 width=32 src=https://zhuzhulang.github.io/blog/images/github-mark-white.png></a></div><div class="Header-item d-md-none"><button class="Header-link btn-link js-details-target" type=button onclick='document.querySelector("#header-search").style.display=document.querySelector("#header-search").style.display=="none"?"block":"none"'><svg height="24" class="octicon octicon-three-bars" viewBox="0 0 16 16" width="24"><path fill-rule="evenodd" d="M1 2.75A.75.75.0 011.75 2h12.5a.75.75.0 110 1.5H1.75A.75.75.0 011 2.75zm0 5A.75.75.0 011.75 7h12.5a.75.75.0 110 1.5H1.75A.75.75.0 011 7.75zM1.75 12a.75.75.0 100 1.5h12.5a.75.75.0 100-1.5H1.75z"/></svg></button></div><div style=display:none id=header-search class="Header-item Header-item--full flex-column flex-md-row width-full flex-order-2 flex-md-order-none mr-0 mr-md-3 mt-3 mt-md-0 Details-content--hidden-not-important d-md-flex"><div class="Header-search header-search flex-auto js-site-search position-relative flex-self-stretch flex-md-self-auto mb-3 mb-md-0 mr-0 mr-md-3 scoped-search site-scoped-search js-jump-to"><div class=position-relative><form target=_blank id=search-form accept-charset=UTF-8 method=get autocomplete=off><label class="Header-search-label form-control input-sm header-search-wrapper p-0 js-chromeless-input-container header-search-wrapper-jump-to position-relative d-flex flex-justify-between flex-items-center"><input type=text class="Header-search-input form-control input-sm header-search-input jump-to-field js-jump-to-field js-site-search-focus js-site-search-field is-clearable" name=q placeholder=Search autocomplete=off></label></form></div></div></div><div class="Header-item Header-item--full flex-justify-center d-md-none position-relative"><a class=Header-link href=https://zhuzhulang.github.io/blog/><img class="octicon octicon-mark-github v-align-middle" height=32 width=32 src=https://zhuzhulang.github.io/blog/images/github-mark-white.png></a></div><div class=Header-item style=margin-right:0><a href=javascript:void(0) class="Header-link no-select" onclick=switchTheme()><svg style="fill:var(--color-profile-color-modes-toggle-moon)" class="no-select" viewBox="0 0 16 16" width="16" height="16"><path fill-rule="evenodd" clip-rule="evenodd" d="M4.52208 7.71754c3.05612.0 5.53362-2.47748 5.53362-5.5336C10.0557 1.93498 10.0392 1.68986 10.0074 1.44961 9.95801 1.07727 10.3495.771159 10.6474.99992c1.4679 1.12724 2.4141 2.90007 2.4141 4.89391.0 3.40575-2.7609 6.16667-6.16665 6.16667-2.94151.0-5.40199-2.0595-6.018122-4.81523C.794841 6.87902 1.23668 6.65289 1.55321 6.85451 2.41106 7.40095 3.4296 7.71754 4.52208 7.71754z"/></svg></a></div></header></div><div id=search-result class="container-lg px-3 new-discussion-timeline" style=display:none></div><div class=application-main><div><main><div class="gisthead pagehead bg-gray-light pb-0 pt-3 mb-4"><div class=px-0><div class="mb-3 d-flex px-3 px-md-3 px-lg-5"><div class="flex-auto min-width-0 width-fit mr-3"><div class=d-flex><div class="d-none d-md-block"><a class="avatar mr-2 flex-shrink-0" href=https://zhuzhulang.github.io/blog/><img class=avatar-user src=https://zhuzhulang.github.io/blog/images/avatar.jpg width=32 height=32></a></div><div class="d-flex flex-column"><h1 class="break-word f3 text-normal mb-md-0 mb-1"><span class=author><a href=https://zhuzhulang.github.io/blog/>码力全开</a>
+</span><span class=path-divider>/</span>
+<strong class="css-truncate css-truncate-target mr-1" style=max-width:410px><a href=https://zhuzhulang.github.io/blog/posts/how-to-use-vits-for-speech-synthesis/>使用VITS进行语音合成</a></strong></h1><div class="note m-0">Created <relative-time datetime="Sat, 26 Apr 2025 09:13:13 +0800" class=no-wrap>Sat, 26 Apr 2025 09:13:13 +0800</relative-time>
+<span class=file-info-divider></span>
+Modified <relative-time datetime="Mon, 26 May 2025 09:23:02 +0800" class=no-wrap>Mon, 26 May 2025 09:23:02 +0800</relative-time></div></div></div></div></div></div></div><div class="container-lg px-3 new-discussion-timeline"><div class="repository-content gist-content"><div><div class="js-gist-file-update-container js-task-list-container file-box"><div id=file-pytest class="file my-2"><div id=post-header class="file-header d-flex flex-md-items-center flex-items-start sticky-header" style=z-index:2><div class="file-info d-flex flex-md-items-center flex-items-start flex-order-1 flex-auto"><div class="text-mono f6 flex-auto pr-3 flex-order-2 flex-md-order-1 mt-2 mt-md-0"><summary id=toc-toggle onclick=clickToc() class="btn btn-octicon m-0 mr-2 p-2"><svg aria-hidden="true" viewBox="0 0 16 16" height="16" width="16" class="octicon octicon-list-unordered"><path fill-rule="evenodd" d="M2 4a1 1 0 100-2 1 1 0 000 2zm3.75-1.5a.75.75.0 000 1.5h8.5a.75.75.0 000-1.5h-8.5zm0 5a.75.75.0 000 1.5h8.5a.75.75.0 000-1.5h-8.5zm0 5a.75.75.0 000 1.5h8.5a.75.75.0 000-1.5h-8.5zM3 8A1 1 0 111 8a1 1 0 012 0zm-1 6a1 1 0 100-2 1 1 0 000 2z"/></svg></summary><details-menu class=SelectMenu id=toc-details style="display: none;"><div class="SelectMenu-modal rounded-3 mt-1" style=max-height:340px><div class="SelectMenu-list SelectMenu-list--borderless p-2" style=overscroll-behavior:contain id=toc-list></div></div></details-menu>2928 Words
+<span class=file-info-divider></span>
+3 min</div><div class="file-actions flex-order-2 pt-0"><a class="muted-link mr-3" href=https://zhuzhulang.github.io/blog/tags/ai><svg class="octicon octicon-tag" viewBox="0 0 16 16" width="16" height="16"><path fill-rule="evenodd" d="M2.5 7.775V2.75a.25.25.0 01.25-.25h5.025a.25.25.0 01.177.073l6.25 6.25a.25.25.0 010 .354l-5.025 5.025a.25.25.0 01-.354.0l-6.25-6.25A.25.25.0 012.5 7.775zm-1.5.0V2.75C1 1.784 1.784 1 2.75 1h5.025c.464.0.91.184 1.238.513l6.25 6.25a1.75 1.75.0 010 2.474l-5.026 5.026a1.75 1.75.0 01-2.474.0l-6.25-6.25A1.75 1.75.0 011 7.775zM6 5a1 1 0 100 2 1 1 0 000-2z"/></svg>
+AI</a></div></div></div><article class="markdown-body entry-content container-lg"><aside class=toc-wrapper><nav id=TableOfContents><ol><li><a href=#vits是什么>VITS是什么?</a></li><li><a href=#安装必备工具>安装必备工具</a></li><li><a href=#获取代码仓库>获取代码仓库</a></li><li><a href=#下载原神角色模型>下载原神角色模型</a></li><li><a href=#合成你的第一段语音>合成你的第一段语音</a></li></ol></nav></aside><div class="Box-body px-5 pb-5" style=z-index:1><h2 id=vits是什么>VITS是什么?</h2><p>VITS(Variational Inference with adversarial learning for end-to-end Text-to-Speech)是一种基于深度学习的端到端语音合成技术。相较于传统TTS系统，它无需复杂的声学模型和声码器，直接通过文本生成自然流畅的语音。</p><p>其核心在于：</p><ol><li>变分自编码器(VAE)结构</li><li>对抗训练机制</li><li>蒙特卡洛flow-based时长预测</li></ol><p>其内部由3个模型组成,分别是GAN、VAE和Flow。</p><h2 id=安装必备工具>安装必备工具</h2><p>下面先安装相应的工具:</p><pre>
+# 基础环境
+conda create -n vits python=3.8
+conda activate vits
+pip install torch==1.10.0+cu113 torchvision==0.11.1+cu113 torchaudio==0.10.0 -f https://download.pytorch.org/whl/cu113/torch_stable.html
+
+# 核心依赖
+pip install numpy scipy matplotlib pandas
+pip install tensorboard librosa unidecode inflect
+</pre><h2 id=获取代码仓库>获取代码仓库</h2><p>这里没有选择官方的仓库,而是选择如下微调的仓库代码,因为其支持中文模型:</p><pre>
+git clone https://github.com/Plachtaa/VITS-fast-fine-tuning.git
+pip install -r requirements.txt
+</pre><h2 id=下载原神角色模型>下载原神角色模型</h2><p>访问【<a href=https://url69.ctfile.com/d/63184069-67582447-75e4fe>VITS-genshin</a>】下载相关的模型,密码是8243。将整个目录下载下来放在源码目录下。</p><h2 id=合成你的第一段语音>合成你的第一段语音</h2><p>在项目仓库目录下新建1个脚本,其中的代码如下</p><pre tabindex=0><code>import os
+import torch
+import utils
+import commons
+import logging
+import soundfile as sf
+from text import text_to_sequence
+from models import SynthesizerTrn
+from torch import no_grad, LongTensor
+
+logger = logging.getLogger(&#34;jieba&#34;)
+logger.setLevel(logging.WARNING)
+limitation = False
+
+hps_ms = utils.get_hparams_from_file(&#39;./configs/uma_trilingual.json&#39;)
+    
+device = torch.device(&#34;cpu&#34;)
+
+net_g_ms = SynthesizerTrn(
+    len(hps_ms.symbols),
+    hps_ms.data.filter_length // 2 + 1,
+    hps_ms.train.segment_size // hps_ms.data.hop_length,
+    n_speakers=hps_ms.data.n_speakers,
+    **hps_ms.model)
+_ = net_g_ms.eval().to(device)
+model, optimizer, learning_rate, epochs = utils.load_checkpoint(&#34;./pretrained_models/G_trilingual.pth&#34;, net_g_ms, None)
+
+
+def get_text(text, hps):
+    text_norm = text_to_sequence(text, hps.symbols, hps.data.text_cleaners)
+    if hps.data.add_blank:
+        text_norm = commons.intersperse(text_norm, 0)
+    text_norm = LongTensor(text_norm)
+    return text_norm
+
+def vits(text, language, speaker_id, noise_scale, noise_scale_w, length_scale):
+    if not len(text):
+        return &#34;输入文本不能为空！&#34;, None, None
+    text = text.replace(&#39;\n&#39;, &#39; &#39;).replace(&#39;\r&#39;, &#39;&#39;).replace(&#34; &#34;, &#34;&#34;)
+    length = len(text)
+    if length &gt; 100:
+        return &#34;输入文字过长!&#34;, None, None
+    if language == 0:
+        text = &#34;[ZH]{}[ZH]&#34;.format(text)
+    elif language == 1:
+        text = &#34;[JA]{}[JA]&#34;.format(text)
+    stn_tst = get_text(text, hps_ms)
+    with no_grad():
+        x_tst = stn_tst.unsqueeze(0).to(device)
+        x_tst_lengths = LongTensor([stn_tst.size(0)]).to(device)
+        speaker_id = LongTensor([speaker_id]).to(device)
+        audio = net_g_ms.infer(x_tst, x_tst_lengths, sid=speaker_id, noise_scale=noise_scale, noise_scale_w=noise_scale_w,
+                               length_scale=length_scale)[0][0, 0].data.cpu().float().numpy()
+
+    return 22050, audio
+
+
+if __name__ == &#34;__main__&#34;:
+    speakers = {
+        &#34;特别周&#34;: 0, &#34;无声铃鹿&#34;: 1, &#34;东海帝王&#34;: 2, &#34;丸善斯基&#34;: 3, &#34;富士奇迹&#34;: 4, &#34;小栗帽&#34;: 5, &#34;黄金船&#34;: 6, &#34;伏特加&#34;: 7, &#34;大和赤骥&#34;: 8, &#34;大树快车&#34;: 9, 
+        &#34;草上飞&#34;: 10, &#34;菱亚马逊&#34;: 11, &#34;目白麦昆&#34;: 12, &#34;神鹰&#34;: 13, &#34;好歌剧&#34;: 14, &#34;成田白仁&#34;: 15, &#34;鲁道夫象征&#34;: 16, &#34;气槽&#34;: 17, &#34;爱丽数码&#34;: 18, &#34;青云天空&#34;: 19, 
+        &#34;玉藻十字&#34;: 20, &#34;美妙姿势&#34;: 21, &#34;琵琶晨光&#34;: 22, &#34;重炮&#34;: 23, &#34;曼城茶座&#34;: 24, &#34;美普波旁&#34;: 25, &#34;目白雷恩&#34;: 26, &#34;雪之美人&#34;: 28, &#34;米浴&#34;: 29, &#34;艾尼斯风神&#34;: 30,
+         &#34;爱丽速子&#34;: 31, &#34;爱慕织姬&#34;: 32, &#34;稻荷一&#34;: 33, &#34;胜利奖券&#34;: 34, &#34;空中神宫&#34;: 35, &#34;荣进闪耀&#34;: 36, &#34;真机伶&#34;: 37, &#34;川上公主&#34;: 38, &#34;黄金城市&#34;: 39, &#34;樱花进王&#34;: 40, 
+         &#34;采珠&#34;: 41, &#34;新光风&#34;: 42, &#34;东商变革&#34;: 43, &#34;超级小溪&#34;: 44, &#34;醒目飞鹰&#34;: 45, &#34;荒漠英雄&#34;: 46, &#34;东瀛佐敦&#34;: 47, &#34;中山庆典&#34;: 48, &#34;成田大进&#34;: 49, &#34;西野花&#34;: 50,
+          &#34;春乌拉拉&#34;: 51, &#34;青竹回忆&#34;: 52, &#34;待兼福来&#34;: 55, &#34;名将怒涛&#34;: 57, &#34;目白多伯&#34;: 58, &#34;优秀素质&#34;: 59, &#34;帝王光环&#34;: 60, &#34;待兼诗歌剧&#34;: 61, &#34;生野狄杜斯&#34;: 62, 
+          &#34;目白善信&#34;: 63, &#34;大拓太阳神&#34;: 64, &#34;双涡轮&#34;: 65, &#34;里见光钻&#34;: 66, &#34;北部玄驹&#34;: 67, &#34;樱花千代王&#34;: 68, &#34;天狼星象征&#34;: 69, &#34;目白阿尔丹&#34;: 70, &#34;八重无敌&#34;: 71, 
+          &#34;鹤丸刚志&#34;: 72, &#34;目白光明&#34;: 73, &#34;樱花桂冠&#34;: 74, &#34;成田路&#34;: 75, &#34;也文摄辉&#34;: 76, &#34;真弓快车&#34;: 80, &#34;骏川手纲&#34;: 81, &#34;小林历奇&#34;: 83, &#34;奇锐骏&#34;: 85, &#34;秋川理事长&#34;: 86, 
+          &#34;綾地&#34;: 87, &#34;因幡&#34;: 88, &#34;椎葉&#34;: 89, &#34;仮屋&#34;: 90, &#34;戸隠&#34;: 91, &#34;九条裟罗&#34;: 92, &#34;芭芭拉&#34;: 93, &#34;派蒙&#34;: 94, &#34;荒泷一斗&#34;: 96, &#34;早柚&#34;: 97, &#34;香菱&#34;: 98, &#34;神里绫华&#34;: 99, 
+          &#34;重云&#34;: 100, &#34;流浪者&#34;: 102, &#34;优菈&#34;: 103, &#34;凝光&#34;: 105, &#34;钟离&#34;: 106, &#34;雷电将军&#34;: 107, &#34;枫原万叶&#34;: 108, &#34;赛诺&#34;: 109, &#34;诺艾尔&#34;: 112, &#34;八重神子&#34;: 113, &#34;凯亚&#34;: 114,
+           &#34;魈&#34;: 115, &#34;托马&#34;: 116, &#34;可莉&#34;: 117, &#34;迪卢克&#34;: 120, &#34;夜兰&#34;: 121, &#34;鹿野院平藏&#34;: 123, &#34;辛焱&#34;: 124, &#34;丽莎&#34;: 125, &#34;云堇&#34;: 126, &#34;坎蒂丝&#34;: 127, &#34;罗莎莉亚&#34;: 128, 
+           &#34;北斗&#34;: 129, &#34;珊瑚宫心海&#34;: 132, &#34;烟绯&#34;: 133, &#34;久岐忍&#34;: 136, &#34;宵宫&#34;: 139, &#34;安柏&#34;: 143, &#34;迪奥娜&#34;: 144, &#34;班尼特&#34;: 146, &#34;雷泽&#34;: 147, &#34;阿贝多&#34;: 151, &#34;温迪&#34;: 152, 
+           &#34;空&#34;: 153, &#34;神里绫人&#34;: 154, &#34;琴&#34;: 155, &#34;艾尔海森&#34;: 156, &#34;莫娜&#34;: 157, &#34;妮露&#34;: 159, &#34;胡桃&#34;: 160, &#34;甘雨&#34;: 161, &#34;纳西妲&#34;: 162, &#34;刻晴&#34;: 165, &#34;荧&#34;: 169, &#34;埃洛伊&#34;: 179,
+           &#34;柯莱&#34;: 182, &#34;多莉&#34;: 184, &#34;提纳里&#34;: 186, &#34;砂糖&#34;: 188, &#34;行秋&#34;: 190, &#34;奥兹&#34;: 193, &#34;五郎&#34;: 198, &#34;达达利亚&#34;: 202, &#34;七七&#34;: 207, &#34;申鹤&#34;: 217, &#34;莱依拉&#34;: 228, &#34;菲谢尔&#34;: 230
+    }
+
+    speed = 1
+    output_dir = &#34;output&#34;
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+    for k in  speakers:
+        id = speakers[k]
+        print(&#34;Speaker:&#34;,k)
+        sr, audio = vits(&#39;你好,我是玛丽&#39;, 0, torch.tensor([id]), 0.1, 0.668, 1.0/speed)
+        filename = os.path.join(output_dir, &#34;{}.wav&#34;.format(k))
+        sf.write(filename, audio, samplerate=sr)
+</code></pre><p>运行即可看到如下生成的效果:</p><p><img src=https://zhuzhulang.github.io/blog/img/3082360-761160819.png alt=image></p><p>最后来听下效果:</p><figure><figcaption style=font-weight:700;color:#333;margin-bottom:10px>八重神子</figcaption><audio controls src=https://dlink.host/musics/aHR0cHM6Ly9vbmVkcnYtbXkuc2hhcmVwb2ludC5jb20vOnU6L2cvcGVyc29uYWwvc3Rvcl9vbmVkcnZfb25taWNyb3NvZnRfY29tL0VUUDluX1ZsV0Z0S2dnSTdkLTFwMldzQm9nRjQ5TGdDVHkwMmtUaG9CZ21ha3c.wav></audio><figcaption style=font-weight:700;color:#333;margin-bottom:10px>东海帝王</figcaption><audio controls src=https://dlink.host/musics/aHR0cHM6Ly9vbmVkcnYtbXkuc2hhcmVwb2ludC5jb20vOnU6L2cvcGVyc29uYWwvc3Rvcl9vbmVkcnZfb25taWNyb3NvZnRfY29tL0VkMXYxdHQxMFB0RnVXS0xpLW9JckMwQnRMWlVIYk1XN0x1S191RzFJS253ZGc.wav></figure><p>相对来说,其合成的语音还是比较真实的。但是限于原神角色的问题,如果想更为正式的场景,还是需要自己微调。</p><div class=reward><span>如果喜欢这篇文章或对您有帮助，可以：[☕] 请我喝杯咖啡 | [💓] 小额赞助</span><br><img src=https://zhuzhulang.github.io/blog/img/qr_alipay.jpg>
+<img src=https://zhuzhulang.github.io/blog/img/qr_wechat.png></div></article></div></div></div></div></div></div></main></div><script type=application/javascript src=https://zhuzhulang.github.io/blog/js/toc.js></script><link rel=stylesheet href=https://zhuzhulang.github.io/blog/css/toc.css></div><div class="footer container-xl width-full p-responsive"><div class="position-relative d-flex flex-row-reverse flex-lg-row flex-wrap flex-lg-nowrap flex-justify-center flex-lg-justify-between flex-sm-items-center pt-6 pb-2 mt-6 f6 text-gray border-top border-gray-light"><a aria-label=Homepage title=GitHub class="footer-octicon d-none d-lg-block mr-lg-4" href=https://zhuzhulang.github.io/blog/><svg height="24" class="octicon octicon-mark-github" viewBox="0 0 16 16" width="24"><path fill-rule="evenodd" d="M8 0C3.58.0.0 3.58.0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38.0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95.0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12.0.0.67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15.0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48.0 1.07-.01 1.93-.01 2.2.0.21.15.46.55.38A8.013 8.013.0 0016 8c0-4.42-3.58-8-8-8z"/></svg></a><ul class="list-style-none d-flex flex-wrap col-12 flex-justify-center flex-lg-justify-between mb-2 mb-lg-0"><li class="mr-3 mr-lg-0">✨ 原创不易，转载请注明作者和链接哦~</li><li class="mr-3 mr-lg-0">GitHub and the Invertocat logo are trademarks of <a href=https://github.com/>GitHub, Inc.</a></li></ul></div><div class="d-flex flex-justify-center pb-6"><span class="f6 text-gray-light"></span></div></div></body><script type=application/javascript src=https://zhuzhulang.github.io/blog/js/github-style.js></script><script src=https://cdn.jsdelivr.net/npm/fuse.js/dist/fuse.min.js></script><script type=application/javascript src=https://zhuzhulang.github.io/blog/js/search.js></script></html>
