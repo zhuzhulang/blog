@@ -1,0 +1,110 @@
+<!doctype html><html lang=zh-cn><head><meta charset=utf-8><meta name=viewport content="width=device-width"><script type=application/javascript src=https://zhuzhulang.github.io/blog/js/theme-mode.js></script><link rel=stylesheet href=https://zhuzhulang.github.io/blog/css/frameworks.min.css><link rel=stylesheet href=https://zhuzhulang.github.io/blog/css/github.min.css><link rel=stylesheet href=https://zhuzhulang.github.io/blog/css/github-style.css><link rel=stylesheet href=https://zhuzhulang.github.io/blog/css/light.css><link rel=stylesheet href=https://zhuzhulang.github.io/blog/css/dark.css><link rel=stylesheet href=https://zhuzhulang.github.io/blog/css/syntax.css><title>Dify二次开发-使用MCP协议查询数据库数据 - 码力全开</title>
+<link rel=icon type=image/x-icon href=https://zhuzhulang.github.io/blog/images/github-mark.png><meta name=theme-color content="#1e2327"><meta name=description content="如何通过MCP协议对数据库中数据进行查询"><meta name=keywords content='blog,ai,in action'><meta name=robots content="noodp"><link rel=canonical href=https://zhuzhulang.github.io/blog/posts/how-to-use-mcp-protocol-query-data/><meta name=twitter:card content="summary"><meta name=twitter:title content="Dify二次开发-使用MCP协议查询数据库数据 - 码力全开"><meta name=twitter:description content="如何通过MCP协议对数据库中数据进行查询"><meta name=twitter:site content="https://zhuzhulang.github.io/blog/"><meta name=twitter:creator content><meta name=twitter:image content="https://zhuzhulang.github.io/blog/"><meta property="og:type" content="article"><meta property="og:title" content="Dify二次开发-使用MCP协议查询数据库数据 - 码力全开"><meta property="og:description" content="如何通过MCP协议对数据库中数据进行查询"><meta property="og:url" content="https://zhuzhulang.github.io/blog/posts/how-to-use-mcp-protocol-query-data/"><meta property="og:site_name" content="Dify二次开发-使用MCP协议查询数据库数据"><meta property="og:image" content="https://zhuzhulang.github.io/blog/"><meta property="og:image:width" content="2048"><meta property="og:image:height" content="1024"><meta property="article:published_time" content="2025-06-13 20:27:30 +0800 CST"></head><body><div style=position:relative><header class="Header js-details-container Details px-3 px-md-4 px-lg-5 flex-wrap flex-md-nowrap open Details--on"><div class="Header-item mobile-none" style=margin-top:-4px;margin-bottom:-4px><a class=Header-link href=https://zhuzhulang.github.io/blog/><img class=octicon height=32 width=32 src=https://zhuzhulang.github.io/blog/images/github-mark-white.png></a></div><div class="Header-item d-md-none"><button class="Header-link btn-link js-details-target" type=button onclick='document.querySelector("#header-search").style.display=document.querySelector("#header-search").style.display=="none"?"block":"none"'><svg height="24" class="octicon octicon-three-bars" viewBox="0 0 16 16" width="24"><path fill-rule="evenodd" d="M1 2.75A.75.75.0 011.75 2h12.5a.75.75.0 110 1.5H1.75A.75.75.0 011 2.75zm0 5A.75.75.0 011.75 7h12.5a.75.75.0 110 1.5H1.75A.75.75.0 011 7.75zM1.75 12a.75.75.0 100 1.5h12.5a.75.75.0 100-1.5H1.75z"/></svg></button></div><div style=display:none id=header-search class="Header-item Header-item--full flex-column flex-md-row width-full flex-order-2 flex-md-order-none mr-0 mr-md-3 mt-3 mt-md-0 Details-content--hidden-not-important d-md-flex"><div class="Header-search header-search flex-auto js-site-search position-relative flex-self-stretch flex-md-self-auto mb-3 mb-md-0 mr-0 mr-md-3 scoped-search site-scoped-search js-jump-to"><div class=position-relative><form target=_blank id=search-form accept-charset=UTF-8 method=get autocomplete=off><label class="Header-search-label form-control input-sm header-search-wrapper p-0 js-chromeless-input-container header-search-wrapper-jump-to position-relative d-flex flex-justify-between flex-items-center"><input type=text class="Header-search-input form-control input-sm header-search-input jump-to-field js-jump-to-field js-site-search-focus js-site-search-field is-clearable" name=q placeholder=Search autocomplete=off></label></form></div></div></div><div class="Header-item Header-item--full flex-justify-center d-md-none position-relative"><a class=Header-link href=https://zhuzhulang.github.io/blog/><img class="octicon octicon-mark-github v-align-middle" height=32 width=32 src=https://zhuzhulang.github.io/blog/images/github-mark-white.png></a></div><div class=Header-item style=margin-right:0><a href=javascript:void(0) class="Header-link no-select" onclick=switchTheme()><svg style="fill:var(--color-profile-color-modes-toggle-moon)" class="no-select" viewBox="0 0 16 16" width="16" height="16"><path fill-rule="evenodd" clip-rule="evenodd" d="M4.52208 7.71754c3.05612.0 5.53362-2.47748 5.53362-5.5336C10.0557 1.93498 10.0392 1.68986 10.0074 1.44961 9.95801 1.07727 10.3495.771159 10.6474.99992c1.4679 1.12724 2.4141 2.90007 2.4141 4.89391.0 3.40575-2.7609 6.16667-6.16665 6.16667-2.94151.0-5.40199-2.0595-6.018122-4.81523C.794841 6.87902 1.23668 6.65289 1.55321 6.85451 2.41106 7.40095 3.4296 7.71754 4.52208 7.71754z"/></svg></a></div></header></div><div id=search-result class="container-lg px-3 new-discussion-timeline" style=display:none></div><div class=application-main><div><main><div class="gisthead pagehead bg-gray-light pb-0 pt-3 mb-4"><div class=px-0><div class="mb-3 d-flex px-3 px-md-3 px-lg-5"><div class="flex-auto min-width-0 width-fit mr-3"><div class=d-flex><div class="d-none d-md-block"><a class="avatar mr-2 flex-shrink-0" href=https://zhuzhulang.github.io/blog/><img class=avatar-user src=https://zhuzhulang.github.io/blog/images/avatar.jpg width=32 height=32></a></div><div class="d-flex flex-column"><h1 class="break-word f3 text-normal mb-md-0 mb-1"><span class=author><a href=https://zhuzhulang.github.io/blog/>码力全开</a>
+</span><span class=path-divider>/</span>
+<strong class="css-truncate css-truncate-target mr-1" style=max-width:410px><a href=https://zhuzhulang.github.io/blog/posts/how-to-use-mcp-protocol-query-data/>Dify二次开发-使用MCP协议查询数据库数据</a></strong></h1><div class="note m-0">Created <relative-time datetime="Fri, 13 Jun 2025 20:27:30 +0800" class=no-wrap>Fri, 13 Jun 2025 20:27:30 +0800</relative-time>
+<span class=file-info-divider></span>
+Modified <relative-time datetime="Fri, 13 Jun 2025 21:20:28 +0800" class=no-wrap>Fri, 13 Jun 2025 21:20:28 +0800</relative-time></div></div></div></div></div></div></div><div class="container-lg px-3 new-discussion-timeline"><div class="repository-content gist-content"><div><div class="js-gist-file-update-container js-task-list-container file-box"><div id=file-pytest class="file my-2"><div id=post-header class="file-header d-flex flex-md-items-center flex-items-start sticky-header" style=z-index:2><div class="file-info d-flex flex-md-items-center flex-items-start flex-order-1 flex-auto"><div class="text-mono f6 flex-auto pr-3 flex-order-2 flex-md-order-1 mt-2 mt-md-0"><summary id=toc-toggle onclick=clickToc() class="btn btn-octicon m-0 mr-2 p-2"><svg aria-hidden="true" viewBox="0 0 16 16" height="16" width="16" class="octicon octicon-list-unordered"><path fill-rule="evenodd" d="M2 4a1 1 0 100-2 1 1 0 000 2zm3.75-1.5a.75.75.0 000 1.5h8.5a.75.75.0 000-1.5h-8.5zm0 5a.75.75.0 000 1.5h8.5a.75.75.0 000-1.5h-8.5zm0 5a.75.75.0 000 1.5h8.5a.75.75.0 000-1.5h-8.5zM3 8A1 1 0 111 8a1 1 0 012 0zm-1 6a1 1 0 100-2 1 1 0 000 2z"/></svg></summary><details-menu class=SelectMenu id=toc-details style="display: none;"><div class="SelectMenu-modal rounded-3 mt-1" style=max-height:340px><div class="SelectMenu-list SelectMenu-list--borderless p-2" style=overscroll-behavior:contain id=toc-list></div></div></details-menu>1435 Words
+<span class=file-info-divider></span>
+2 min
+<span class=file-info-divider></span>
+<svg fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" viewBox="0 0 24 20" height="20"><path d="M12 10c-7 0-11 7-11 7s3.5 7 11 7 11-7 11-7-4-7-11-7z"/><circle r="4" cy="16" cx="12"/></svg>
+<span id=busuanzi_container_page_pv><span id=busuanzi_value_page_pv></span></span></div><div class="file-actions flex-order-2 pt-0"><a class="muted-link mr-3" href=https://zhuzhulang.github.io/blog/tags/ai><svg class="octicon octicon-tag" viewBox="0 0 16 16" width="16" height="16"><path fill-rule="evenodd" d="M2.5 7.775V2.75a.25.25.0 01.25-.25h5.025a.25.25.0 01.177.073l6.25 6.25a.25.25.0 010 .354l-5.025 5.025a.25.25.0 01-.354.0l-6.25-6.25A.25.25.0 012.5 7.775zm-1.5.0V2.75C1 1.784 1.784 1 2.75 1h5.025c.464.0.91.184 1.238.513l6.25 6.25a1.75 1.75.0 010 2.474l-5.026 5.026a1.75 1.75.0 01-2.474.0l-6.25-6.25A1.75 1.75.0 011 7.775zM6 5a1 1 0 100 2 1 1 0 000-2z"/></svg>
+AI</a></div></div></div><article class="markdown-body entry-content container-lg"><aside class=toc-wrapper><nav id=TableOfContents></nav></aside><div class="Box-body px-5 pb-5" style=z-index:1><p>这应该是Dify二次开发最后一篇文章了,主要是觉得没什么可以写的了。而且Dify调试起来很不方便,不想花费太多心思在这上面。而且要通过该技能找到工作还是蛮难的,现在的企业都想找熟手的,问题哪里可以快速培养出这么多的人来。</p><p>说是月薪15K,但很多企业连10K都不到,面对的是1-3年Python开发经验即可,我只能呵呵了。一边是大模型无所不能的需求,一边是薪资对不起就业的环境。最近才遇到一个企业的领导,觉得我Dify不是很深入。既要你懂还要经验丰富,薪资就15-30K。结果还是一时兴起想找个人做这个项目,但又不确定能让你干多久,还要求Java很熟练。敢问会Java能进行Dify二次开发?更有意思的是说他也是搞技术的,哈哈。</p><p>这里Dify版本必须大于<code>1.0.0</code>才能使用其插件功能,这里使用的版本是<code>1.0.1</code>。首先是对应插件的安装:</p><p><img src=https://zhuzhulang.github.io/blog/img/201212-47834642646.jpg alt=image></p><p>接着是MCP服务器代码的编写,这里使用的是FastMCP库,可以直接使用pip进行安装。但是需要确保Python的版本大于<code>3.10</code>。其对应的代码如下:</p><pre tabindex=0><code>import psycopg2
+from fastmcp import FastMCP
+
+mcp = FastMCP(&#34;postgresql-mcp&#34;,port=9000)
+
+conn_params = {
+    &#34;dbname&#34;: &#34;xxx&#34;,
+    &#34;user&#34;: &#34;xxx&#34;,
+    &#34;password&#34;: &#34;xxx&#34;,
+    &#34;host&#34;: &#34;localhost&#34;,      # 默认本地
+    &#34;port&#34;: &#34;5432&#34;           # PostgreSQL默认端口
+}
+
+@mcp.tool()
+def execute_sql(query:str) -&gt; list:
+    &#34;&#34;&#34;
+    执行SQL查询语句
+
+    参数:
+        query (str): 要执行的SQL语句，支持多条语句以分号分隔
+
+    返回:
+        list: 包含查询结果的TextContent列表
+        - 对于SELECT查询：返回CSV格式的结果，包含列名和数据
+        - 对于SHOW TABLES：返回数据库中的所有表名
+        - 对于其他查询：返回执行状态和影响行数
+        - 多条语句的结果以&#34;---&#34;分隔
+
+    &#34;&#34;&#34;
+    try:
+        with psycopg2.connect(**conn_params) as conn:
+            with conn.cursor() as cursor:
+                statements = [stmt.strip() for stmt in query.split(&#34;;&#34;) if stmt.strip()]
+                results = []
+                for statement in statements:
+                    try:
+                        print(&#34;SQL:{}&#34;.format(statement))
+                        cursor.execute(statement)
+                        # 检查语句是否返回了结果集 (SELECT, SHOW, EXPLAIN, etc.)
+                        if cursor.description:
+                            columns = [desc[0] for desc in cursor.description]
+                            rows = cursor.fetchall()
+                            # 将每一行的数据转换为字符串，特殊处理None值
+                            formatted_rows = []
+                            for row in rows:
+                                formatted_row = [
+                                    &#34;NULL&#34; if value is None else str(value)
+                                    for value in row
+                                ]
+                                formatted_rows.append(&#34;,&#34;.join(formatted_row))
+
+                            # 将列名和数据合并为CSV格式
+                            results.append(
+                                &#34;\n&#34;.join([&#34;,&#34;.join(columns)] + formatted_rows)
+                            )
+
+                        # 如果语句没有返回结果集 (INSERT, UPDATE, DELETE, etc.)
+                        else:
+                            conn.commit()  # 只有在非查询语句时才提交
+                            results.append(f&#34;查询执行成功。影响行数: {cursor.rowcount}&#34;)
+                    except Error as stmt_error:
+                        # 单条语句执行出错时，记录错误并继续执行
+                        results.append(
+                            f&#34;执行语句 &#39;{statement}&#39; 出错: {str(stmt_error)}&#34;
+                        )
+                        # 可以在这里选择是否继续执行后续语句，目前是继续
+                return [&#34;\n---\n&#34;.join(results)]
+
+    except Exception as e:
+        print(f&#34;Error for &#39;{query}&#39;: {e}&#34;)
+        return [f&#34;Error for: {str(e)}&#34;]
+
+if __name__ == &#39;__main__&#39;:
+    mcp.run(transport=&#34;sse&#34;)
+</code></pre><p>之后是对MCP SSE插件进行授权,其内容类似如下:</p><pre>
+{  "postgresql-mcp": {    "url": "http://127.0.0.1:9000/sse",    "headers": {}, "timeout": 500,    "sse_read_timeout": 50  }}
+</pre><p>可以根据实际的IP进行修改。需要注意的是其2个插件版本要求必须是<code>0.06</code>才能正常调用。
+最后就可以创建应用了,选择Chatflow即可。按照要求填写相关的内容。其中MCP服务器地址为:</p><pre>
+{  "postgresql-mcp": {    "url": "http://127.0.0.1:9000/sse",    "headers": {}, "timeout": 150,    "sse_read_timeout": 50  }}
+</pre><p>这里使用MCP对PostgreSQL中的数据进行查询,只涉及单表数据的查询,因此效果会很好。
+而指令中内容如下:</p><pre>
+使用中文回复。
+当用户提问中涉及漏洞实体时,需要使用postgresql-mcp进行数据查询和操作,表结构说明如下:
+
+##   漏洞信息表(vulnerability_information)
+
+|     字段名    |          类型          |  描述   |
+|--------------|------------------------|---------|
+| id           | integer                | ID |
+| bug_name     | character varying(200) | 漏洞名称 |
+| cnnvd_id     | character varying(20)  | CNNVD号 |
+| publish_date | date                   | 发布时间 |
+| bug_desc     | text                   | 漏洞描述 |
+| cve_id       | character varying(20)  | CVE号   |
+| severity     | character varying(2)   | 风险级别 |
+</pre><p>其最终效果如下:</p><iframe src="//player.bilibili.com/player.html?isOutside=true&aid=114676163743298&bvid=BV1MsMBzFEZk&cid=30477388350&p=1" scrolling=no border=0 frameborder=no framespacing=0 allowfullscreen width=800 height=600></iframe><p>可以看到输入内容后,对应的结果就开始不断输出了。而在MCP服务器这边可以看到如下的输出:</p><pre>
+SQL:SELECT * FROM vulnerability_information WHERE publish_date >= '2025-01-01' AND publish_date < '2026-01-01' LIMIT 10
+</pre><p>可以清楚看到大模型很好的理解其需求,并输出了正确的SQL语句并执行。而对于多表复杂的条件,其效果则会大打折扣。因此实际商用还面临很多挑战急需解决。</p><p>参考文章:</p><blockquote><p><a href=https://www.cnblogs.com/xiao987334176/p/18827261>https://www.cnblogs.com/xiao987334176/p/18827261</a></p></blockquote><blockquote><p><a href=https://www.cnblogs.com/xiao987334176/p/18822444>https://www.cnblogs.com/xiao987334176/p/18822444</a></p></blockquote><div class=reward><span>如果喜欢这篇文章或对您有帮助，可以：[☕] 请我喝杯咖啡 | [💓] 小额赞助</span><br><img src=https://zhuzhulang.github.io/blog/img/qr_alipay.jpg>
+<img src=https://zhuzhulang.github.io/blog/img/qr_wechat.png></div></article></div></div></div></div></div></div></main></div><script type=application/javascript src=https://zhuzhulang.github.io/blog/js/toc.js></script><link rel=stylesheet href=https://zhuzhulang.github.io/blog/css/toc.css></div><div class="footer container-xl width-full p-responsive"><div class="position-relative d-flex flex-row-reverse flex-lg-row flex-wrap flex-lg-nowrap flex-justify-center flex-lg-justify-between flex-sm-items-center pt-6 pb-2 mt-6 f6 text-gray border-top border-gray-light"><a aria-label=Homepage title=GitHub class="footer-octicon d-none d-lg-block mr-lg-4" href=https://zhuzhulang.github.io/blog/><svg height="24" class="octicon octicon-mark-github" viewBox="0 0 16 16" width="24"><path fill-rule="evenodd" d="M8 0C3.58.0.0 3.58.0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38.0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95.0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12.0.0.67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15.0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48.0 1.07-.01 1.93-.01 2.2.0.21.15.46.55.38A8.013 8.013.0 0016 8c0-4.42-3.58-8-8-8z"/></svg></a><ul class="list-style-none d-flex flex-wrap col-12 flex-justify-center flex-lg-justify-between mb-2 mb-lg-0"><li class="mr-3 mr-lg-0">✨ 原创不易，转载请注明作者和链接哦~</li><li class="mr-3 mr-lg-0">GitHub and the Invertocat logo are trademarks of <a href=https://github.com/>GitHub, Inc.</a></li></ul></div><div class="d-flex flex-justify-center pb-6"><span class="f6 text-gray-light"></span></div></div></body><script type=application/javascript src=https://zhuzhulang.github.io/blog/js/github-style.js></script><script src=https://cdn.jsdelivr.net/npm/fuse.js/dist/fuse.min.js></script><script type=application/javascript src=https://zhuzhulang.github.io/blog/js/search.js></script><script async src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js></script></html>
