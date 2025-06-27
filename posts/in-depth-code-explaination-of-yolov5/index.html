@@ -1,0 +1,190 @@
+<!doctype html><html lang=zh-cn><head><meta charset=utf-8><meta name=viewport content="width=device-width"><script type=application/javascript src=https://zhuzhulang.github.io/blog/js/theme-mode.js></script><link rel=stylesheet href=https://zhuzhulang.github.io/blog/css/frameworks.min.css><link rel=stylesheet href=https://zhuzhulang.github.io/blog/css/github.min.css><link rel=stylesheet href=https://zhuzhulang.github.io/blog/css/github-style.css><link rel=stylesheet href=https://zhuzhulang.github.io/blog/css/light.css><link rel=stylesheet href=https://zhuzhulang.github.io/blog/css/dark.css><link rel=stylesheet href=https://zhuzhulang.github.io/blog/css/syntax.css><title>YOLOv5目标检测代码精解 - 码力全开</title>
+<link rel=icon type=image/x-icon href=https://zhuzhulang.github.io/blog/images/github-mark.png><meta name=theme-color content="#1e2327"><meta name=description content="手把手从YOLOv3代码入手,为你详细讲解其训练整个实现过程"><meta name=keywords content='blog,ai,in action'><meta name=robots content="noodp"><link rel=canonical href=https://zhuzhulang.github.io/blog/posts/in-depth-code-explaination-of-yolov5/><meta name=twitter:card content="summary"><meta name=twitter:title content="YOLOv5目标检测代码精解 - 码力全开"><meta name=twitter:description content="手把手从YOLOv3代码入手,为你详细讲解其训练整个实现过程"><meta name=twitter:site content="https://zhuzhulang.github.io/blog/"><meta name=twitter:creator content><meta name=twitter:image content="https://zhuzhulang.github.io/blog/"><meta property="og:type" content="article"><meta property="og:title" content="YOLOv5目标检测代码精解 - 码力全开"><meta property="og:description" content="手把手从YOLOv3代码入手,为你详细讲解其训练整个实现过程"><meta property="og:url" content="https://zhuzhulang.github.io/blog/posts/in-depth-code-explaination-of-yolov5/"><meta property="og:site_name" content="YOLOv5目标检测代码精解"><meta property="og:image" content="https://zhuzhulang.github.io/blog/"><meta property="og:image:width" content="2048"><meta property="og:image:height" content="1024"><meta property="article:published_time" content="2025-06-27 16:29:48 +0800 CST"></head><script type=text/javascript src="//api.wukongtongji.com/c?_=793054730599555072" async></script><body><div style=position:relative><header class="Header js-details-container Details px-3 px-md-4 px-lg-5 flex-wrap flex-md-nowrap open Details--on"><div class="Header-item mobile-none" style=margin-top:-4px;margin-bottom:-4px><a class=Header-link href=https://zhuzhulang.github.io/blog/><img class=octicon height=32 width=32 src=https://zhuzhulang.github.io/blog/images/github-mark-white.png></a></div><div class="Header-item d-md-none"><button class="Header-link btn-link js-details-target" type=button onclick='document.querySelector("#header-search").style.display=document.querySelector("#header-search").style.display=="none"?"block":"none"'><svg height="24" class="octicon octicon-three-bars" viewBox="0 0 16 16" width="24"><path fill-rule="evenodd" d="M1 2.75A.75.75.0 011.75 2h12.5a.75.75.0 110 1.5H1.75A.75.75.0 011 2.75zm0 5A.75.75.0 011.75 7h12.5a.75.75.0 110 1.5H1.75A.75.75.0 011 7.75zM1.75 12a.75.75.0 100 1.5h12.5a.75.75.0 100-1.5H1.75z"/></svg></button></div><div style=display:none id=header-search class="Header-item Header-item--full flex-column flex-md-row width-full flex-order-2 flex-md-order-none mr-0 mr-md-3 mt-3 mt-md-0 Details-content--hidden-not-important d-md-flex"><div class="Header-search header-search flex-auto js-site-search position-relative flex-self-stretch flex-md-self-auto mb-3 mb-md-0 mr-0 mr-md-3 scoped-search site-scoped-search js-jump-to"><div class=position-relative><form target=_blank id=search-form accept-charset=UTF-8 method=get autocomplete=off><label class="Header-search-label form-control input-sm header-search-wrapper p-0 js-chromeless-input-container header-search-wrapper-jump-to position-relative d-flex flex-justify-between flex-items-center"><input type=text class="Header-search-input form-control input-sm header-search-input jump-to-field js-jump-to-field js-site-search-focus js-site-search-field is-clearable" name=q placeholder=Search autocomplete=off></label></form></div></div></div><div class="Header-item Header-item--full flex-justify-center d-md-none position-relative"><a class=Header-link href=https://zhuzhulang.github.io/blog/><img class="octicon octicon-mark-github v-align-middle" height=32 width=32 src=https://zhuzhulang.github.io/blog/images/github-mark-white.png></a></div><div class=Header-item style=margin-right:0><a href=javascript:void(0) class="Header-link no-select" onclick=switchTheme()><svg style="fill:var(--color-profile-color-modes-toggle-moon)" class="no-select" viewBox="0 0 16 16" width="16" height="16"><path fill-rule="evenodd" clip-rule="evenodd" d="M4.52208 7.71754c3.05612.0 5.53362-2.47748 5.53362-5.5336C10.0557 1.93498 10.0392 1.68986 10.0074 1.44961 9.95801 1.07727 10.3495.771159 10.6474.99992c1.4679 1.12724 2.4141 2.90007 2.4141 4.89391.0 3.40575-2.7609 6.16667-6.16665 6.16667-2.94151.0-5.40199-2.0595-6.018122-4.81523C.794841 6.87902 1.23668 6.65289 1.55321 6.85451 2.41106 7.40095 3.4296 7.71754 4.52208 7.71754z"/></svg></a></div></header></div><div id=search-result class="container-lg px-3 new-discussion-timeline" style=display:none></div><div class=application-main><div><main><div class="gisthead pagehead bg-gray-light pb-0 pt-3 mb-4"><div class=px-0><div class="mb-3 d-flex px-3 px-md-3 px-lg-5"><div class="flex-auto min-width-0 width-fit mr-3"><div class=d-flex><div class="d-none d-md-block"><a class="avatar mr-2 flex-shrink-0" href=https://zhuzhulang.github.io/blog/><img class=avatar-user src=https://zhuzhulang.github.io/blog/images/avatar.jpg width=32 height=32></a></div><div class="d-flex flex-column"><h1 class="break-word f3 text-normal mb-md-0 mb-1"><span class=author><a href=https://zhuzhulang.github.io/blog/>码力全开</a>
+</span><span class=path-divider>/</span>
+<strong class="css-truncate css-truncate-target mr-1" style=max-width:410px><a href=https://zhuzhulang.github.io/blog/posts/in-depth-code-explaination-of-yolov5/>YOLOv5目标检测代码精解</a></strong></h1><div class="note m-0">Created <relative-time datetime="Fri, 27 Jun 2025 16:29:48 +0800" class=no-wrap>Fri, 27 Jun 2025 16:29:48 +0800</relative-time>
+<span class=file-info-divider></span>
+Modified <relative-time datetime="Fri, 27 Jun 2025 20:20:23 +0800" class=no-wrap>Fri, 27 Jun 2025 20:20:23 +0800</relative-time></div></div></div></div></div></div></div><div class="container-lg px-3 new-discussion-timeline"><div class="repository-content gist-content"><div><div class="js-gist-file-update-container js-task-list-container file-box"><div id=file-pytest class="file my-2"><div id=post-header class="file-header d-flex flex-md-items-center flex-items-start sticky-header" style=z-index:2><div class="file-info d-flex flex-md-items-center flex-items-start flex-order-1 flex-auto"><div class="text-mono f6 flex-auto pr-3 flex-order-2 flex-md-order-1 mt-2 mt-md-0"><summary id=toc-toggle onclick=clickToc() class="btn btn-octicon m-0 mr-2 p-2"><svg aria-hidden="true" viewBox="0 0 16 16" height="16" width="16" class="octicon octicon-list-unordered"><path fill-rule="evenodd" d="M2 4a1 1 0 100-2 1 1 0 000 2zm3.75-1.5a.75.75.0 000 1.5h8.5a.75.75.0 000-1.5h-8.5zm0 5a.75.75.0 000 1.5h8.5a.75.75.0 000-1.5h-8.5zm0 5a.75.75.0 000 1.5h8.5a.75.75.0 000-1.5h-8.5zM3 8A1 1 0 111 8a1 1 0 012 0zm-1 6a1 1 0 100-2 1 1 0 000 2z"/></svg></summary><details-menu class=SelectMenu id=toc-details style="display: none;"><div class="SelectMenu-modal rounded-3 mt-1" style=max-height:340px><div class="SelectMenu-list SelectMenu-list--borderless p-2" style=overscroll-behavior:contain id=toc-list></div></div></details-menu>1505 Words
+<span class=file-info-divider></span>
+4 min
+<span class=file-info-divider></span>
+<svg fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" viewBox="0 0 24 20" height="20"><path d="M12 10c-7 0-11 7-11 7s3.5 7 11 7 11-7 11-7-4-7-11-7z"/><circle r="4" cy="16" cx="12"/></svg>
+<span id=busuanzi_container_page_pv><span id=busuanzi_value_page_pv></span></span></div><div class="file-actions flex-order-2 pt-0"><a class="muted-link mr-3" href=https://zhuzhulang.github.io/blog/tags/ai><svg class="octicon octicon-tag" viewBox="0 0 16 16" width="16" height="16"><path fill-rule="evenodd" d="M2.5 7.775V2.75a.25.25.0 01.25-.25h5.025a.25.25.0 01.177.073l6.25 6.25a.25.25.0 010 .354l-5.025 5.025a.25.25.0 01-.354.0l-6.25-6.25A.25.25.0 012.5 7.775zm-1.5.0V2.75C1 1.784 1.784 1 2.75 1h5.025c.464.0.91.184 1.238.513l6.25 6.25a1.75 1.75.0 010 2.474l-5.026 5.026a1.75 1.75.0 01-2.474.0l-6.25-6.25A1.75 1.75.0 011 7.775zM6 5a1 1 0 100 2 1 1 0 000-2z"/></svg>
+AI</a></div></div></div><article class="markdown-body entry-content container-lg"><aside class=toc-wrapper><nav id=TableOfContents><ol><li><ol><li><a href=#前言>前言</a></li><li><a href=#目标检测训练代码>目标检测训练代码</a></li></ol></li></ol></nav></aside><div class="Box-body px-5 pb-5" style=z-index:1><h3 id=前言>前言</h3><p>之前介绍了YOLOv3推理过程整个代码的过程,详细内容可以<a href=https://zhuzhulang.github.io/blog/posts/in-depth-code-explaination-of-yolov3>参考</a>。而YOLOv5的推理代码由于是同一个团队的实现,实际上并没有太大的变化,只是将其中的cfg配置文件修改为yaml格式,而权重文件是PyTorch格式的。</p><p>首先下载其源码:</p><pre>
+git clone -b v4.0 --depth 1 http://github.com/ultralytics/yolov5.git
+</pre><p>这里采用的是其版本4.0的代码进行讲解。其代码目录结构如下:</p><pre>
+|   detect.py
+|   Dockerfile
+|   hubconf.py
+|   LICENSE
+|   README.md
+|   requirements.txt
+|   test.py
+|   train.py
+|   tutorial.ipynb
+|
++---.github
+|   |   dependabot.yml
+|   |
+|   +---ISSUE_TEMPLATE
+|   |       bug-report.md
+|   |       feature-request.md
+|   |       question.md
+|   |
+|   \---workflows
+|           ci-testing.yml
+|           codeql-analysis.yml
+|           greetings.yml
+|           rebase.yml
+|           stale.yml
+|
++---data
+|   |   coco.yaml
+|   |   coco128.yaml
+|   |   hyp.finetune.yaml
+|   |   hyp.scratch.yaml
+|   |   voc.yaml
+|   |
+|   +---images
+|   |       bus.jpg
+|   |       zidane.jpg
+|   |
+|   \---scripts
+|           get_coco.sh
+|           get_voc.sh
+|
++---models
+|   |   common.py
+|   |   experimental.py
+|   |   export.py
+|   |   yolo.py
+|   |   yolov5l.yaml
+|   |   yolov5m.yaml
+|   |   yolov5s.yaml
+|   |   yolov5x.yaml
+|   |   __init__.py
+|   |
+|   \---hub
+|           anchors.yaml
+|           yolov3-spp.yaml
+|           yolov3-tiny.yaml
+|           yolov3.yaml
+|           yolov5-fpn.yaml
+|           yolov5-p2.yaml
+|           yolov5-p6.yaml
+|           yolov5-p7.yaml
+|           yolov5-panet.yaml
+|
++---utils
+|   |   activations.py
+|   |   autoanchor.py
+|   |   datasets.py
+|   |   general.py
+|   |   google_utils.py
+|   |   loss.py
+|   |   metrics.py
+|   |   plots.py
+|   |   torch_utils.py
+|   |   __init__.py
+|   |
+|   \---google_app_engine
+|           additional_requirements.txt
+|           app.yaml
+|           Dockerfile
+|
+\---weights
+        download_weights.sh
+</pre><p>其中YOLOv5中添加了<code>torch.hub</code>的加载方式,提供了shell脚本用于下载COCO及PASCAL VOC数据集。另外还提供了教程文件<code>tutorial.ipynb</code>用于让开发人员了解其调用方式。</p><h3 id=目标检测训练代码>目标检测训练代码</h3><p>其训练代码在<code>train.py</code>模块中,首先是相应命令行参数:</p><pre tabindex=0><code>    parser = argparse.ArgumentParser()
+    parser.add_argument(&#39;--weights&#39;, type=str, default=&#39;yolov5s.pt&#39;, help=&#39;initial weights path&#39;)
+    parser.add_argument(&#39;--cfg&#39;, type=str, default=&#39;&#39;, help=&#39;model.yaml path&#39;)
+    parser.add_argument(&#39;--data&#39;, type=str, default=&#39;data/coco128.yaml&#39;, help=&#39;data.yaml path&#39;)
+    parser.add_argument(&#39;--hyp&#39;, type=str, default=&#39;data/hyp.scratch.yaml&#39;, help=&#39;hyperparameters path&#39;)
+    parser.add_argument(&#39;--epochs&#39;, type=int, default=300)
+    parser.add_argument(&#39;--batch-size&#39;, type=int, default=16, help=&#39;total batch size for all GPUs&#39;)
+    parser.add_argument(&#39;--img-size&#39;, nargs=&#39;+&#39;, type=int, default=[640, 640], help=&#39;[train, test] image sizes&#39;)
+    parser.add_argument(&#39;--rect&#39;, action=&#39;store_true&#39;, help=&#39;rectangular training&#39;)
+    parser.add_argument(&#39;--resume&#39;, nargs=&#39;?&#39;, const=True, default=False, help=&#39;resume most recent training&#39;)
+    parser.add_argument(&#39;--nosave&#39;, action=&#39;store_true&#39;, help=&#39;only save final checkpoint&#39;)
+    parser.add_argument(&#39;--notest&#39;, action=&#39;store_true&#39;, help=&#39;only test final epoch&#39;)
+    parser.add_argument(&#39;--noautoanchor&#39;, action=&#39;store_true&#39;, help=&#39;disable autoanchor check&#39;)
+    parser.add_argument(&#39;--evolve&#39;, action=&#39;store_true&#39;, help=&#39;evolve hyperparameters&#39;)
+    parser.add_argument(&#39;--bucket&#39;, type=str, default=&#39;&#39;, help=&#39;gsutil bucket&#39;)
+    parser.add_argument(&#39;--cache-images&#39;, action=&#39;store_true&#39;, help=&#39;cache images for faster training&#39;)
+    parser.add_argument(&#39;--image-weights&#39;, action=&#39;store_true&#39;, help=&#39;use weighted image selection for training&#39;)
+    parser.add_argument(&#39;--device&#39;, default=&#39;&#39;, help=&#39;cuda device, i.e. 0 or 0,1,2,3 or cpu&#39;)
+    parser.add_argument(&#39;--multi-scale&#39;, action=&#39;store_true&#39;, help=&#39;vary img-size +/- 50%%&#39;)
+    parser.add_argument(&#39;--single-cls&#39;, action=&#39;store_true&#39;, help=&#39;train multi-class data as single-class&#39;)
+    parser.add_argument(&#39;--adam&#39;, action=&#39;store_true&#39;, help=&#39;use torch.optim.Adam() optimizer&#39;)
+    parser.add_argument(&#39;--sync-bn&#39;, action=&#39;store_true&#39;, help=&#39;use SyncBatchNorm, only available in DDP mode&#39;)
+    parser.add_argument(&#39;--local_rank&#39;, type=int, default=-1, help=&#39;DDP parameter, do not modify&#39;)
+    parser.add_argument(&#39;--log-imgs&#39;, type=int, default=16, help=&#39;number of images for W&amp;B logging, max 100&#39;)
+    parser.add_argument(&#39;--log-artifacts&#39;, action=&#39;store_true&#39;, help=&#39;log artifacts, i.e. final trained model&#39;)
+    parser.add_argument(&#39;--workers&#39;, type=int, default=8, help=&#39;maximum number of dataloader workers&#39;)
+    parser.add_argument(&#39;--project&#39;, default=&#39;runs/train&#39;, help=&#39;save to project/name&#39;)
+    parser.add_argument(&#39;--name&#39;, default=&#39;exp&#39;, help=&#39;save to project/name&#39;)
+    parser.add_argument(&#39;--exist-ok&#39;, action=&#39;store_true&#39;, help=&#39;existing project/name ok, do not increment&#39;)
+    parser.add_argument(&#39;--quad&#39;, action=&#39;store_true&#39;, help=&#39;quad dataloader&#39;)
+    opt = parser.parse_args()
+</code></pre><p>其中参数说明如下:</p><ul><li>weights,模型权重文件路径</li><li>cfg,模型配置文件路径</li><li>data,训练的数据集,默认为<code>data/coco128.yaml</code>。该数据集只有6.6M,可以用于训练测试。而完整的数据集需要调用<code>data/scripts</code>目录下的shell脚本,其中COCO数据集大小为27GB,而VOC数据集为2.8GB</li><li>hyp,超参数路径</li><li>epochs,训练的轮数,默认为300</li><li>batch-size,总的batch数量</li></ul><p>其中数据集内目录结构如下:</p><ul><li>images,图片数据</li><li>labels,标注数据</li></ul><p>每张图片对应一个标注数据文本文件,其内容类似如下:</p><pre>
+45 0.479492 0.688771 0.955609 0.5955
+45 0.736516 0.247188 0.498875 0.476417
+50 0.637063 0.732938 0.494125 0.510583
+45 0.339438 0.418896 0.678875 0.7815
+</pre><p>其中45和50是相应的类型的ID,之后4位是x,y,w,h归一化后的值。而yaml文件中需要指定如下一些内容:</p><pre>
+train: ../coco128/images/train2017/  # 128 images
+val: ../coco128/images/train2017/  # 128 images
+
+# number of classes
+nc: 80
+
+# class names
+names: [ 'person', ..., 'hair drier', 'toothbrush' ]
+</pre><p>分别是训练和验证集的目录,分类的数量及每个类的名称。</p><p>之后是使用并行GPU的参数设置:</p><pre tabindex=0><code>    # Set DDP variables
+    opt.world_size = int(os.environ[&#39;WORLD_SIZE&#39;]) if &#39;WORLD_SIZE&#39; in os.environ else 1
+    opt.global_rank = int(os.environ[&#39;RANK&#39;]) if &#39;RANK&#39; in os.environ else -1
+    set_logging(opt.global_rank)
+    if opt.global_rank in [-1, 0]:
+        check_git_status()
+
+    # DDP mode
+    opt.total_batch_size = opt.batch_size
+    device = select_device(opt.device, batch_size=opt.batch_size)
+    if opt.local_rank != -1:
+        assert torch.cuda.device_count() &gt; opt.local_rank
+        torch.cuda.set_device(opt.local_rank)
+        device = torch.device(&#39;cuda&#39;, opt.local_rank)
+        dist.init_process_group(backend=&#39;nccl&#39;, init_method=&#39;env://&#39;)  # distributed backend
+        assert opt.batch_size % opt.world_size == 0, &#39;--batch-size must be multiple of CUDA device count&#39;
+        opt.batch_size = opt.total_batch_size // opt.world_size
+</code></pre><p>接着是断点续练,从最近的训练点继续训练,需要在命令行参数中设置<code>--resume</code>为true进行开启:</p><pre tabindex=0><code>    # Resume
+    if opt.resume:  # resume an interrupted run
+        ckpt = opt.resume if isinstance(opt.resume, str) else get_latest_run()  # specified or most recent path
+        assert os.path.isfile(ckpt), &#39;ERROR: --resume checkpoint does not exist&#39;
+        apriori = opt.global_rank, opt.local_rank
+        with open(Path(ckpt).parent.parent / &#39;opt.yaml&#39;) as f:
+            opt = argparse.Namespace(**yaml.load(f, Loader=yaml.FullLoader))  # replace
+        opt.cfg, opt.weights, opt.resume, opt.global_rank, opt.local_rank = &#39;&#39;, ckpt, True, *apriori  # reinstate
+        logger.info(&#39;Resuming training from %s&#39; % ckpt)
+    else:
+        # opt.hyp = opt.hyp or (&#39;hyp.finetune.yaml&#39; if opt.weights else &#39;hyp.scratch.yaml&#39;)
+        opt.data, opt.cfg, opt.hyp = check_file(opt.data), check_file(opt.cfg), check_file(opt.hyp)  # check files
+        assert len(opt.cfg) or len(opt.weights), &#39;either --cfg or --weights must be specified&#39;
+        opt.img_size.extend([opt.img_size[-1]] * (2 - len(opt.img_size)))  # extend to 2 sizes (train, test)
+        opt.name = &#39;evolve&#39; if opt.evolve else opt.name
+        opt.save_dir = increment_path(Path(opt.project) / opt.name, exist_ok=opt.exist_ok | opt.evolve)  # increment run
+</code></pre><p>设置超参数的配置:</p><pre tabindex=0><code>    # Hyperparameters
+    with open(opt.hyp) as f:
+        hyp = yaml.load(f, Loader=yaml.FullLoader)  # load hyps
+        if &#39;box&#39; not in hyp:
+            warn(&#39;Compatibility: %s missing &#34;box&#34; which was renamed from &#34;giou&#34; in %s&#39; %
+                 (opt.hyp, &#39;https://github.com/ultralytics/yolov5/pull/1120&#39;))
+            hyp[&#39;box&#39;] = hyp.pop(&#39;giou&#39;)
+</code></pre><p>之后调用train函数进行模型训练:</p><pre tabindex=0><code>    # Train
+    logger.info(opt)
+    if not opt.evolve:
+        tb_writer = None  # init loggers
+        if opt.global_rank in [-1, 0]:
+            logger.info(f&#39;Start Tensorboard with &#34;tensorboard --logdir {opt.project}&#34;, view at http://localhost:6006/&#39;)
+            tb_writer = SummaryWriter(opt.save_dir)  # Tensorboard
+        train(hyp, opt, device, tb_writer, wandb)
+</code></pre><p>利用Tensorboard的SummaryWriter将训练数据汇总并写入。</p><p>整个过程逻辑还是比较清晰的,没有什么难度。只要按照其对应的数据格式标注自己的数据集即可。</p><div class=reward><span>如果喜欢这篇文章或对您有帮助，可以：[☕] 请我喝杯咖啡 | [💓] 小额赞助</span><br><img src=https://zhuzhulang.github.io/blog/img/qr_alipay.jpg>
+<img src=https://zhuzhulang.github.io/blog/img/qr_wechat.png></div></article></div></div></div></div></div></div></main></div><script type=application/javascript src=https://zhuzhulang.github.io/blog/js/toc.js></script><link rel=stylesheet href=https://zhuzhulang.github.io/blog/css/toc.css></div><div class="footer container-xl width-full p-responsive"><div class="position-relative d-flex flex-row-reverse flex-lg-row flex-wrap flex-lg-nowrap flex-justify-center flex-lg-justify-between flex-sm-items-center pt-6 pb-2 mt-6 f6 text-gray border-top border-gray-light"><a aria-label=Homepage title=GitHub class="footer-octicon d-none d-lg-block mr-lg-4" href=https://zhuzhulang.github.io/blog/><svg height="24" class="octicon octicon-mark-github" viewBox="0 0 16 16" width="24"><path fill-rule="evenodd" d="M8 0C3.58.0.0 3.58.0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38.0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95.0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12.0.0.67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15.0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48.0 1.07-.01 1.93-.01 2.2.0.21.15.46.55.38A8.013 8.013.0 0016 8c0-4.42-3.58-8-8-8z"/></svg></a><ul class="list-style-none d-flex flex-wrap col-12 flex-justify-center flex-lg-justify-between mb-2 mb-lg-0"><li class="mr-3 mr-lg-0">✨ 原创不易，转载请注明作者和链接哦~</li><li class="mr-3 mr-lg-0">GitHub and the Invertocat logo are trademarks of <a href=https://github.com/>GitHub, Inc.</a></li></ul></div><div class="d-flex flex-justify-center pb-6"><span class="f6 text-gray-light"></span></div></div></body><script type=application/javascript src=https://zhuzhulang.github.io/blog/js/github-style.js></script><script src=https://cdn.jsdelivr.net/npm/fuse.js/dist/fuse.min.js></script><script type=application/javascript src=https://zhuzhulang.github.io/blog/js/search.js></script><script async src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js></script></html>
