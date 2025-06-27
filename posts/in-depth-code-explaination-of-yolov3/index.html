@@ -1,0 +1,156 @@
+<!doctype html><html lang=zh-cn><head><meta charset=utf-8><meta name=viewport content="width=device-width"><script type=application/javascript src=https://zhuzhulang.github.io/blog/js/theme-mode.js></script><link rel=stylesheet href=https://zhuzhulang.github.io/blog/css/frameworks.min.css><link rel=stylesheet href=https://zhuzhulang.github.io/blog/css/github.min.css><link rel=stylesheet href=https://zhuzhulang.github.io/blog/css/github-style.css><link rel=stylesheet href=https://zhuzhulang.github.io/blog/css/light.css><link rel=stylesheet href=https://zhuzhulang.github.io/blog/css/dark.css><link rel=stylesheet href=https://zhuzhulang.github.io/blog/css/syntax.css><title>YOLOv3目标检测代码精解 - 码力全开</title>
+<link rel=icon type=image/x-icon href=https://zhuzhulang.github.io/blog/images/github-mark.png><meta name=theme-color content="#1e2327"><meta name=description content="手把手从YOLOv3代码入手,为你详细讲解其整个实现过程"><meta name=keywords content='blog,ai,in action'><meta name=robots content="noodp"><link rel=canonical href=https://zhuzhulang.github.io/blog/posts/in-depth-code-explaination-of-yolov3/><meta name=twitter:card content="summary"><meta name=twitter:title content="YOLOv3目标检测代码精解 - 码力全开"><meta name=twitter:description content="手把手从YOLOv3代码入手,为你详细讲解其整个实现过程"><meta name=twitter:site content="https://zhuzhulang.github.io/blog/"><meta name=twitter:creator content><meta name=twitter:image content="https://zhuzhulang.github.io/blog/"><meta property="og:type" content="article"><meta property="og:title" content="YOLOv3目标检测代码精解 - 码力全开"><meta property="og:description" content="手把手从YOLOv3代码入手,为你详细讲解其整个实现过程"><meta property="og:url" content="https://zhuzhulang.github.io/blog/posts/in-depth-code-explaination-of-yolov3/"><meta property="og:site_name" content="YOLOv3目标检测代码精解"><meta property="og:image" content="https://zhuzhulang.github.io/blog/"><meta property="og:image:width" content="2048"><meta property="og:image:height" content="1024"><meta property="article:published_time" content="2025-06-27 10:26:11 +0800 CST"></head><script type=text/javascript src="//api.wukongtongji.com/c?_=793054730599555072" async></script><body><div style=position:relative><header class="Header js-details-container Details px-3 px-md-4 px-lg-5 flex-wrap flex-md-nowrap open Details--on"><div class="Header-item mobile-none" style=margin-top:-4px;margin-bottom:-4px><a class=Header-link href=https://zhuzhulang.github.io/blog/><img class=octicon height=32 width=32 src=https://zhuzhulang.github.io/blog/images/github-mark-white.png></a></div><div class="Header-item d-md-none"><button class="Header-link btn-link js-details-target" type=button onclick='document.querySelector("#header-search").style.display=document.querySelector("#header-search").style.display=="none"?"block":"none"'><svg height="24" class="octicon octicon-three-bars" viewBox="0 0 16 16" width="24"><path fill-rule="evenodd" d="M1 2.75A.75.75.0 011.75 2h12.5a.75.75.0 110 1.5H1.75A.75.75.0 011 2.75zm0 5A.75.75.0 011.75 7h12.5a.75.75.0 110 1.5H1.75A.75.75.0 011 7.75zM1.75 12a.75.75.0 100 1.5h12.5a.75.75.0 100-1.5H1.75z"/></svg></button></div><div style=display:none id=header-search class="Header-item Header-item--full flex-column flex-md-row width-full flex-order-2 flex-md-order-none mr-0 mr-md-3 mt-3 mt-md-0 Details-content--hidden-not-important d-md-flex"><div class="Header-search header-search flex-auto js-site-search position-relative flex-self-stretch flex-md-self-auto mb-3 mb-md-0 mr-0 mr-md-3 scoped-search site-scoped-search js-jump-to"><div class=position-relative><form target=_blank id=search-form accept-charset=UTF-8 method=get autocomplete=off><label class="Header-search-label form-control input-sm header-search-wrapper p-0 js-chromeless-input-container header-search-wrapper-jump-to position-relative d-flex flex-justify-between flex-items-center"><input type=text class="Header-search-input form-control input-sm header-search-input jump-to-field js-jump-to-field js-site-search-focus js-site-search-field is-clearable" name=q placeholder=Search autocomplete=off></label></form></div></div></div><div class="Header-item Header-item--full flex-justify-center d-md-none position-relative"><a class=Header-link href=https://zhuzhulang.github.io/blog/><img class="octicon octicon-mark-github v-align-middle" height=32 width=32 src=https://zhuzhulang.github.io/blog/images/github-mark-white.png></a></div><div class=Header-item style=margin-right:0><a href=javascript:void(0) class="Header-link no-select" onclick=switchTheme()><svg style="fill:var(--color-profile-color-modes-toggle-moon)" class="no-select" viewBox="0 0 16 16" width="16" height="16"><path fill-rule="evenodd" clip-rule="evenodd" d="M4.52208 7.71754c3.05612.0 5.53362-2.47748 5.53362-5.5336C10.0557 1.93498 10.0392 1.68986 10.0074 1.44961 9.95801 1.07727 10.3495.771159 10.6474.99992c1.4679 1.12724 2.4141 2.90007 2.4141 4.89391.0 3.40575-2.7609 6.16667-6.16665 6.16667-2.94151.0-5.40199-2.0595-6.018122-4.81523C.794841 6.87902 1.23668 6.65289 1.55321 6.85451 2.41106 7.40095 3.4296 7.71754 4.52208 7.71754z"/></svg></a></div></header></div><div id=search-result class="container-lg px-3 new-discussion-timeline" style=display:none></div><div class=application-main><div><main><div class="gisthead pagehead bg-gray-light pb-0 pt-3 mb-4"><div class=px-0><div class="mb-3 d-flex px-3 px-md-3 px-lg-5"><div class="flex-auto min-width-0 width-fit mr-3"><div class=d-flex><div class="d-none d-md-block"><a class="avatar mr-2 flex-shrink-0" href=https://zhuzhulang.github.io/blog/><img class=avatar-user src=https://zhuzhulang.github.io/blog/images/avatar.jpg width=32 height=32></a></div><div class="d-flex flex-column"><h1 class="break-word f3 text-normal mb-md-0 mb-1"><span class=author><a href=https://zhuzhulang.github.io/blog/>码力全开</a>
+</span><span class=path-divider>/</span>
+<strong class="css-truncate css-truncate-target mr-1" style=max-width:410px><a href=https://zhuzhulang.github.io/blog/posts/in-depth-code-explaination-of-yolov3/>YOLOv3目标检测代码精解</a></strong></h1><div class="note m-0">Created <relative-time datetime="Fri, 27 Jun 2025 10:26:11 +0800" class=no-wrap>Fri, 27 Jun 2025 10:26:11 +0800</relative-time>
+<span class=file-info-divider></span>
+Modified <relative-time datetime="Fri, 27 Jun 2025 14:39:20 +0800" class=no-wrap>Fri, 27 Jun 2025 14:39:20 +0800</relative-time></div></div></div></div></div></div></div><div class="container-lg px-3 new-discussion-timeline"><div class="repository-content gist-content"><div><div class="js-gist-file-update-container js-task-list-container file-box"><div id=file-pytest class="file my-2"><div id=post-header class="file-header d-flex flex-md-items-center flex-items-start sticky-header" style=z-index:2><div class="file-info d-flex flex-md-items-center flex-items-start flex-order-1 flex-auto"><div class="text-mono f6 flex-auto pr-3 flex-order-2 flex-md-order-1 mt-2 mt-md-0"><summary id=toc-toggle onclick=clickToc() class="btn btn-octicon m-0 mr-2 p-2"><svg aria-hidden="true" viewBox="0 0 16 16" height="16" width="16" class="octicon octicon-list-unordered"><path fill-rule="evenodd" d="M2 4a1 1 0 100-2 1 1 0 000 2zm3.75-1.5a.75.75.0 000 1.5h8.5a.75.75.0 000-1.5h-8.5zm0 5a.75.75.0 000 1.5h8.5a.75.75.0 000-1.5h-8.5zm0 5a.75.75.0 000 1.5h8.5a.75.75.0 000-1.5h-8.5zM3 8A1 1 0 111 8a1 1 0 012 0zm-1 6a1 1 0 100-2 1 1 0 000 2z"/></svg></summary><details-menu class=SelectMenu id=toc-details style="display: none;"><div class="SelectMenu-modal rounded-3 mt-1" style=max-height:340px><div class="SelectMenu-list SelectMenu-list--borderless p-2" style=overscroll-behavior:contain id=toc-list></div></div></details-menu>1896 Words
+<span class=file-info-divider></span>
+3 min
+<span class=file-info-divider></span>
+<svg fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" viewBox="0 0 24 20" height="20"><path d="M12 10c-7 0-11 7-11 7s3.5 7 11 7 11-7 11-7-4-7-11-7z"/><circle r="4" cy="16" cx="12"/></svg>
+<span id=busuanzi_container_page_pv><span id=busuanzi_value_page_pv></span></span></div><div class="file-actions flex-order-2 pt-0"><a class="muted-link mr-3" href=https://zhuzhulang.github.io/blog/tags/ai><svg class="octicon octicon-tag" viewBox="0 0 16 16" width="16" height="16"><path fill-rule="evenodd" d="M2.5 7.775V2.75a.25.25.0 01.25-.25h5.025a.25.25.0 01.177.073l6.25 6.25a.25.25.0 010 .354l-5.025 5.025a.25.25.0 01-.354.0l-6.25-6.25A.25.25.0 012.5 7.775zm-1.5.0V2.75C1 1.784 1.784 1 2.75 1h5.025c.464.0.91.184 1.238.513l6.25 6.25a1.75 1.75.0 010 2.474l-5.026 5.026a1.75 1.75.0 01-2.474.0l-6.25-6.25A1.75 1.75.0 011 7.775zM6 5a1 1 0 100 2 1 1 0 000-2z"/></svg>
+AI</a></div></div></div><article class="markdown-body entry-content container-lg"><aside class=toc-wrapper><nav id=TableOfContents><ol><li><ol><li><a href=#前言>前言</a></li><li><a href=#目标检测代码>目标检测代码</a></li></ol></li></ol></nav></aside><div class="Box-body px-5 pb-5" style=z-index:1><h3 id=前言>前言</h3><p>通过对YOLOv3代码整个流程的讲解,从而更好的把握对YOLO的熟练度。这里使用的代码基于<a href=http://github.com/ultralytics/yolov3><code>ultralytics/yolov3</code></a>版本3.0的代码。</p><pre>
+git clone -b v3.0 --depth 1 http://github.com/ultralytics/yolov3.git
+</pre><p>整个项目目录如下图所示:</p><pre>
+|   .gitignore
+|   detect.py
+|   LICENSE
+|   models.py
+|   README.md
+|   requirements.txt
+|   test.py
+|   train.py
+|
++---cfg
+|       coco.data
+|       yolov3-spp.cfg
+|       yolov3-tiny.cfg
+|       yolov3.cfg
+|
++---data
+|   |   coco.names
+|   |   coco_paper.names
+|   |   get_coco_dataset.sh
+|   |
+|   \---samples
+|           zidane.jpg
+|
++---utils
+|       datasets.py
+|       gcp.sh
+|       parse_config.py
+|       torch_utils.py
+|       utils.py
+|
+\---weights
+        download_yolov3_weights.sh
+</pre><p>其中cfg目录下存放是YOLOv3模型配置文件,可以在运行时指定对应配置构建相应的模型。而data目录是相应模型需要用到的数据,utils下是相应工具函数,weights下就是模型的权重文件。</p><h3 id=目标检测代码>目标检测代码</h3><p>我们从<code>detect.py</code>模块入手查看其整个调用的流程,官方给出的调用方式如下:</p><pre>
+detect.py --cfg cfg/yolov3.cfg --weights weights/yolov3.pt
+</pre><p>相应的代码如下:</p><pre tabindex=0><code>    parser = argparse.ArgumentParser()
+    parser.add_argument(&#39;--cfg&#39;, type=str, default=&#39;cfg/yolov3.cfg&#39;, help=&#39;cfg file path&#39;)
+    parser.add_argument(&#39;--weights&#39;, type=str, default=&#39;weights/yolov3.weights&#39;, help=&#39;path to weights file&#39;)
+    parser.add_argument(&#39;--images&#39;, type=str, default=&#39;data/samples&#39;, help=&#39;path to images&#39;)
+    parser.add_argument(&#39;--img-size&#39;, type=int, default=32 * 13, help=&#39;size of each image dimension&#39;)
+    parser.add_argument(&#39;--conf-thres&#39;, type=float, default=0.50, help=&#39;object confidence threshold&#39;)
+    parser.add_argument(&#39;--nms-thres&#39;, type=float, default=0.45, help=&#39;iou threshold for non-maximum suppression&#39;)
+    opt = parser.parse_args()
+    print(opt)
+
+    with torch.no_grad():
+        detect(
+            opt.cfg,
+            opt.weights,
+            opt.images,
+            img_size=opt.img_size,
+            conf_thres=opt.conf_thres,
+            nms_thres=opt.nms_thres
+        )
+</code></pre><p>从命令行中接收相应的参数:</p><ul><li>cfg,配置文件config的路径</li><li>weights,模型权重文件的路径</li><li>images,推理的图片路径</li><li>img-size,每张图片维度,默认为32x13,即416像素</li><li>conf-thres,置信度阈值,默认为0.5</li><li>nms-thres,NMS阈值,默认为0.45</li></ul><p>之后其调用detect函数:</p><pre tabindex=0><code>    device = torch_utils.select_device()
+    if os.path.exists(output):
+        shutil.rmtree(output)  # delete output folder
+    os.makedirs(output)  # make new output folder
+</code></pre><p>首先选择运行的设备,其代码位于<code>utils/torch_utils.py</code>模块的<code>select_device</code>函数,返回值是cpu或cuda。接着判断输出目录是否存在,若存在则删除进行重建。</p><pre tabindex=0><code># Initialize model
+    model = Darknet(cfg, img_size)
+
+    # Load weights
+    if weights.endswith(&#39;.pt&#39;):  # pytorch format
+        if weights.endswith(&#39;yolov3.pt&#39;) and not os.path.exists(weights):
+            if (platform == &#39;darwin&#39;) or (platform == &#39;linux&#39;):
+                os.system(&#39;wget https://storage.googleapis.com/ultralytics/yolov3.pt -O &#39; + weights)
+            model.load_state_dict(torch.load(weights, map_location=&#39;cpu&#39;)[&#39;model&#39;])
+    else:  # darknet format
+        _ = load_darknet_weights(model, weights)
+</code></pre><p>之后开始初始化模型,并加载权重。其中模型类位于<code>models.py</code>下的Darknet类。</p><pre tabindex=0><code>class Darknet(nn.Module):
+    &#34;&#34;&#34;YOLOv3 object detection model&#34;&#34;&#34;
+
+    def __init__(self, cfg_path, img_size=416):
+        super(Darknet, self).__init__()
+
+        self.module_defs = parse_model_cfg(cfg_path)
+        self.module_defs[0][&#39;cfg&#39;] = cfg_path
+        self.module_defs[0][&#39;height&#39;] = img_size
+        self.hyperparams, self.module_list = create_modules(self.module_defs)
+        self.img_size = img_size
+        self.loss_names = [&#39;loss&#39;, &#39;xy&#39;, &#39;wh&#39;, &#39;conf&#39;, &#39;cls&#39;, &#39;nT&#39;]
+        self.losses = []
+</code></pre><p>此时将解析传入cfg参数中的配置文件的内容,通过调用<code>utils/parse_config.py</code>模块中的<code>parse_model_cfg</code>函数。在该类中调用同模块下<code>create_modules</code>函数根据配置构建相应的网络结构。</p><p>初始化网络模型结构后,下一步就是要加载模型的权重了。此时判断文件的名称是否为<code>.pt</code>后缀,若该文件不存在且为<code>yolov3.pt</code>则尝试下载对应的网络权重文件模型。由于YOLOv3默认的权重文件后缀为<code>.weights</code>,则原作者网站已经无法下载该文件了。如果手头上有相应的文件则直接调用<code>load_darknet_weights</code>函数加载Darknet格式的权重。</p><p>紧接着将模型设置为评估模式并开始加载图片。</p><pre tabindex=0><code>    model.to(device).eval()
+    # Set Dataloader
+    if webcam:
+        save_images = False
+        dataloader = LoadWebcam(img_size=img_size)
+    else:
+        dataloader = LoadImages(images, img_size=img_size)
+</code></pre><p>对于网络摄像头,其调用<code>utils/datasets.py</code>模块下<code>LoadWebcam</code>函数,否则调用<code>LoadImages</code>函数。可以在调用detect函数时指定其<code>webcam</code>参数为True来使用网络摄像头。</p><p>下一步就是加载数据目录data下的类别和颜色:</p><pre tabindex=0><code>    # Get classes and colors
+    classes = load_classes(parse_data_cfg(&#39;cfg/coco.data&#39;)[&#39;names&#39;])
+    colors = [[random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)] for _ in range(len(classes))]
+</code></pre><p>其中YOLOv3中coco数据集共有80个类别,而颜色则为随机分配。下面就要开始遍历图片数据对其进行预测了:</p><pre tabindex=0><code>for i, (path, img, im0) in enumerate(dataloader):
+    t = time.time()
+    if webcam:
+      print(&#39;webcam frame %g: &#39; % (i + 1), end=&#39;&#39;)
+    else:
+      print(&#39;image %g/%g %s: &#39; % (i + 1, len(dataloader), path), end=&#39;&#39;)
+    save_path = str(Path(output) / Path(path).name)
+
+    # Get detections
+    img = torch.from_numpy(img).unsqueeze(0).to(device)
+    if ONNX_EXPORT:
+        torch.onnx.export(model, img, &#39;weights/model.onnx&#39;, verbose=True)
+        return
+</code></pre><p>这里获取图片路径后将其与输出目录拼接在一起,并通过torch加载图片数据,让其为4维张量。如果设置了ONNX导出选项,则直接不进行后续操作,直接将模型导出了。</p><pre tabindex=0><code>    pred = model(img)
+    pred = pred[pred[:, :, 4] &gt; conf_thres]  # remove boxes &lt; threshold
+</code></pre><p>将图片张量传入模型中,并筛选大于置信度阈值的数据。</p><pre tabindex=0><code>    if len(pred) &gt; 0:
+        # Run NMS on predictions
+        detections = non_max_suppression(pred.unsqueeze(0), conf_thres, nms_thres)[0]
+
+        # Rescale boxes from 416 to true image size
+        scale_coords(img_size, detections[:, :4], im0.shape).round()
+
+        # Print results to screen
+        unique_classes = detections[:, -1].cpu().unique()
+        for c in unique_classes:
+            n = (detections[:, -1].cpu() == c).sum()
+            print(&#39;%g %ss&#39; % (n, classes[int(c)]), end=&#39;, &#39;)
+
+        # Draw bounding boxes and labels of detections
+        for x1, y1, x2, y2, conf, cls_conf, cls in detections:
+            if save_txt:  # Write to file
+                with open(save_path + &#39;.txt&#39;, &#39;a&#39;) as file:
+                    file.write(&#39;%g %g %g %g %g %g\n&#39; % (x1, y1, x2, y2, cls, cls_conf * conf))
+
+        # Add bbox to the image
+        label = &#39;%s %.2f&#39; % (classes[int(cls)], conf)
+        plot_one_box([x1, y1, x2, y2], im0, label=label, color=colors[int(cls)])
+</code></pre><p>如果预测的结果大于0个,说明有多个预选框,此时需要使用NMS筛选出最大IOU的边界框。通过<code>utils/utils.py</code>模块中的<code>non_max_suppression</code>实现NMS筛选,之后将边界框缩放为原来图片的大小,之后根据其坐标在原图中绘制并保存到输出目录中。</p><p>而图片绘制使用的是opencv库:</p><pre tabindex=0><code>def plot_one_box(x, img, color=None, label=None, line_thickness=None):
+    # Plots one bounding box on image img
+    tl = line_thickness or round(0.002 * max(img.shape[0:2])) + 1  # line thickness
+    color = color or [random.randint(0, 255) for _ in range(3)]
+    c1, c2 = (int(x[0]), int(x[1])), (int(x[2]), int(x[3]))
+    cv2.rectangle(img, c1, c2, color, thickness=tl)
+    if label:
+        tf = max(tl - 1, 1)  # font thickness
+        t_size = cv2.getTextSize(label, 0, fontScale=tl / 3, thickness=tf)[0]
+        c2 = c1[0] + t_size[0], c1[1] - t_size[1] - 3
+        cv2.rectangle(img, c1, c2, color, -1)  # filled
+        cv2.putText(img, label, (c1[0], c1[1] - 2), 0, tl / 3, [225, 255, 255], thickness=tf, lineType=cv2.LINE_AA)
+</code></pre><p>先获取线框的粗细,之后若无指定颜色则为随机颜色。之后根据左上角坐标及右下角坐标,调用opencv的<code>rectangle</code>方法绘制矩形框。若存在标签的情况,则需要获取字体的大小再进行绘制。</p><div class=reward><span>如果喜欢这篇文章或对您有帮助，可以：[☕] 请我喝杯咖啡 | [💓] 小额赞助</span><br><img src=https://zhuzhulang.github.io/blog/img/qr_alipay.jpg>
+<img src=https://zhuzhulang.github.io/blog/img/qr_wechat.png></div></article></div></div></div></div></div></div></main></div><script type=application/javascript src=https://zhuzhulang.github.io/blog/js/toc.js></script><link rel=stylesheet href=https://zhuzhulang.github.io/blog/css/toc.css></div><div class="footer container-xl width-full p-responsive"><div class="position-relative d-flex flex-row-reverse flex-lg-row flex-wrap flex-lg-nowrap flex-justify-center flex-lg-justify-between flex-sm-items-center pt-6 pb-2 mt-6 f6 text-gray border-top border-gray-light"><a aria-label=Homepage title=GitHub class="footer-octicon d-none d-lg-block mr-lg-4" href=https://zhuzhulang.github.io/blog/><svg height="24" class="octicon octicon-mark-github" viewBox="0 0 16 16" width="24"><path fill-rule="evenodd" d="M8 0C3.58.0.0 3.58.0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38.0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95.0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12.0.0.67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15.0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48.0 1.07-.01 1.93-.01 2.2.0.21.15.46.55.38A8.013 8.013.0 0016 8c0-4.42-3.58-8-8-8z"/></svg></a><ul class="list-style-none d-flex flex-wrap col-12 flex-justify-center flex-lg-justify-between mb-2 mb-lg-0"><li class="mr-3 mr-lg-0">✨ 原创不易，转载请注明作者和链接哦~</li><li class="mr-3 mr-lg-0">GitHub and the Invertocat logo are trademarks of <a href=https://github.com/>GitHub, Inc.</a></li></ul></div><div class="d-flex flex-justify-center pb-6"><span class="f6 text-gray-light"></span></div></div></body><script type=application/javascript src=https://zhuzhulang.github.io/blog/js/github-style.js></script><script src=https://cdn.jsdelivr.net/npm/fuse.js/dist/fuse.min.js></script><script type=application/javascript src=https://zhuzhulang.github.io/blog/js/search.js></script><script async src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js></script></html>
