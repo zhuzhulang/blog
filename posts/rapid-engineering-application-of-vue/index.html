@@ -1,0 +1,154 @@
+<!doctype html><html lang=zh-cn><head><meta charset=utf-8><meta name=viewport content="width=device-width"><script type=application/javascript src=https://zhuzhulang.github.io/blog/js/theme-mode.js></script><link rel=stylesheet href=https://zhuzhulang.github.io/blog/css/frameworks.min.css><link rel=stylesheet href=https://zhuzhulang.github.io/blog/css/github.min.css><link rel=stylesheet href=https://zhuzhulang.github.io/blog/css/github-style.css><link rel=stylesheet href=https://zhuzhulang.github.io/blog/css/light.css><link rel=stylesheet href=https://zhuzhulang.github.io/blog/css/dark.css><link rel=stylesheet href=https://zhuzhulang.github.io/blog/css/syntax.css><title>Vue3快速应用工程化 - 码力全开</title>
+<link rel=icon type=image/x-icon href=https://zhuzhulang.github.io/blog/images/github-mark.png><meta name=theme-color content="#1e2327"><meta name=description content="如何使用Vue3快速进行单页面应用工程化"><meta name=keywords content='blog,ai,in action'><meta name=robots content="noodp"><link rel=canonical href=https://zhuzhulang.github.io/blog/posts/rapid-engineering-application-of-vue/><meta name=twitter:card content="summary"><meta name=twitter:title content="Vue3快速应用工程化 - 码力全开"><meta name=twitter:description content="如何使用Vue3快速进行单页面应用工程化"><meta name=twitter:site content="https://zhuzhulang.github.io/blog/"><meta name=twitter:creator content><meta name=twitter:image content="https://zhuzhulang.github.io/blog/"><meta property="og:type" content="article"><meta property="og:title" content="Vue3快速应用工程化 - 码力全开"><meta property="og:description" content="如何使用Vue3快速进行单页面应用工程化"><meta property="og:url" content="https://zhuzhulang.github.io/blog/posts/rapid-engineering-application-of-vue/"><meta property="og:site_name" content="Vue3快速应用工程化"><meta property="og:image" content="https://zhuzhulang.github.io/blog/"><meta property="og:image:width" content="2048"><meta property="og:image:height" content="1024"><meta property="article:published_time" content="2025-07-26 16:19:13 +0800 CST"></head><script type=text/javascript src="//api.wukongtongji.com/c?_=793054730599555072" async></script><body><div style=position:relative><header class="Header js-details-container Details px-3 px-md-4 px-lg-5 flex-wrap flex-md-nowrap open Details--on"><div class="Header-item mobile-none" style=margin-top:-4px;margin-bottom:-4px><a class=Header-link href=https://zhuzhulang.github.io/blog/><img class=octicon height=32 width=32 src=https://zhuzhulang.github.io/blog/images/github-mark-white.png></a></div><div class="Header-item d-md-none"><button class="Header-link btn-link js-details-target" type=button onclick='document.querySelector("#header-search").style.display=document.querySelector("#header-search").style.display=="none"?"block":"none"'><svg height="24" class="octicon octicon-three-bars" viewBox="0 0 16 16" width="24"><path fill-rule="evenodd" d="M1 2.75A.75.75.0 011.75 2h12.5a.75.75.0 110 1.5H1.75A.75.75.0 011 2.75zm0 5A.75.75.0 011.75 7h12.5a.75.75.0 110 1.5H1.75A.75.75.0 011 7.75zM1.75 12a.75.75.0 100 1.5h12.5a.75.75.0 100-1.5H1.75z"/></svg></button></div><div style=display:none id=header-search class="Header-item Header-item--full flex-column flex-md-row width-full flex-order-2 flex-md-order-none mr-0 mr-md-3 mt-3 mt-md-0 Details-content--hidden-not-important d-md-flex"><div class="Header-search header-search flex-auto js-site-search position-relative flex-self-stretch flex-md-self-auto mb-3 mb-md-0 mr-0 mr-md-3 scoped-search site-scoped-search js-jump-to"><div class=position-relative><form target=_blank id=search-form accept-charset=UTF-8 method=get autocomplete=off><label class="Header-search-label form-control input-sm header-search-wrapper p-0 js-chromeless-input-container header-search-wrapper-jump-to position-relative d-flex flex-justify-between flex-items-center"><input type=text class="Header-search-input form-control input-sm header-search-input jump-to-field js-jump-to-field js-site-search-focus js-site-search-field is-clearable" name=q placeholder=Search autocomplete=off></label></form></div></div></div><div class="Header-item Header-item--full flex-justify-center d-md-none position-relative"><a class=Header-link href=https://zhuzhulang.github.io/blog/><img class="octicon octicon-mark-github v-align-middle" height=32 width=32 src=https://zhuzhulang.github.io/blog/images/github-mark-white.png></a></div><div class=Header-item style=margin-right:0><a href=javascript:void(0) class="Header-link no-select" onclick=switchTheme()><svg style="fill:var(--color-profile-color-modes-toggle-moon)" class="no-select" viewBox="0 0 16 16" width="16" height="16"><path fill-rule="evenodd" clip-rule="evenodd" d="M4.52208 7.71754c3.05612.0 5.53362-2.47748 5.53362-5.5336C10.0557 1.93498 10.0392 1.68986 10.0074 1.44961 9.95801 1.07727 10.3495.771159 10.6474.99992c1.4679 1.12724 2.4141 2.90007 2.4141 4.89391.0 3.40575-2.7609 6.16667-6.16665 6.16667-2.94151.0-5.40199-2.0595-6.018122-4.81523C.794841 6.87902 1.23668 6.65289 1.55321 6.85451 2.41106 7.40095 3.4296 7.71754 4.52208 7.71754z"/></svg></a></div></header></div><div id=search-result class="container-lg px-3 new-discussion-timeline" style=display:none></div><div class=application-main><div><main><div class="gisthead pagehead bg-gray-light pb-0 pt-3 mb-4"><div class=px-0><div class="mb-3 d-flex px-3 px-md-3 px-lg-5"><div class="flex-auto min-width-0 width-fit mr-3"><div class=d-flex><div class="d-none d-md-block"><a class="avatar mr-2 flex-shrink-0" href=https://zhuzhulang.github.io/blog/><img class=avatar-user src=https://zhuzhulang.github.io/blog/images/avatar.jpg width=32 height=32></a></div><div class="d-flex flex-column"><h1 class="break-word f3 text-normal mb-md-0 mb-1"><span class=author><a href=https://zhuzhulang.github.io/blog/>码力全开</a>
+</span><span class=path-divider>/</span>
+<strong class="css-truncate css-truncate-target mr-1" style=max-width:410px><a href=https://zhuzhulang.github.io/blog/posts/rapid-engineering-application-of-vue/>Vue3快速应用工程化</a></strong></h1><div class="note m-0">Created <relative-time datetime="Sat, 26 Jul 2025 16:19:13 +0800" class=no-wrap>Sat, 26 Jul 2025 16:19:13 +0800</relative-time>
+<span class=file-info-divider></span>
+Modified <relative-time datetime="Sun, 27 Jul 2025 22:16:58 +0800" class=no-wrap>Sun, 27 Jul 2025 22:16:58 +0800</relative-time></div></div></div></div></div></div></div><div class="container-lg px-3 new-discussion-timeline"><div class="repository-content gist-content"><div><div class="js-gist-file-update-container js-task-list-container file-box"><div id=file-pytest class="file my-2"><div id=post-header class="file-header d-flex flex-md-items-center flex-items-start sticky-header" style=z-index:2><div class="file-info d-flex flex-md-items-center flex-items-start flex-order-1 flex-auto"><div class="text-mono f6 flex-auto pr-3 flex-order-2 flex-md-order-1 mt-2 mt-md-0"><summary id=toc-toggle onclick=clickToc() class="btn btn-octicon m-0 mr-2 p-2"><svg aria-hidden="true" viewBox="0 0 16 16" height="16" width="16" class="octicon octicon-list-unordered"><path fill-rule="evenodd" d="M2 4a1 1 0 100-2 1 1 0 000 2zm3.75-1.5a.75.75.0 000 1.5h8.5a.75.75.0 000-1.5h-8.5zm0 5a.75.75.0 000 1.5h8.5a.75.75.0 000-1.5h-8.5zm0 5a.75.75.0 000 1.5h8.5a.75.75.0 000-1.5h-8.5zM3 8A1 1 0 111 8a1 1 0 012 0zm-1 6a1 1 0 100-2 1 1 0 000 2z"/></svg></summary><details-menu class=SelectMenu id=toc-details style="display: none;"><div class="SelectMenu-modal rounded-3 mt-1" style=max-height:340px><div class="SelectMenu-list SelectMenu-list--borderless p-2" style=overscroll-behavior:contain id=toc-list></div></div></details-menu>1629 Words
+<span class=file-info-divider></span>
+2 min
+<span class=file-info-divider></span>
+<svg fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" viewBox="0 0 24 20" height="20"><path d="M12 10c-7 0-11 7-11 7s3.5 7 11 7 11-7 11-7-4-7-11-7z"/><circle r="4" cy="16" cx="12"/></svg>
+<span id=busuanzi_container_page_pv><span id=busuanzi_value_page_pv></span></span></div><div class="file-actions flex-order-2 pt-0"><a class="muted-link mr-3" href=https://zhuzhulang.github.io/blog/tags/web><svg class="octicon octicon-tag" viewBox="0 0 16 16" width="16" height="16"><path fill-rule="evenodd" d="M2.5 7.775V2.75a.25.25.0 01.25-.25h5.025a.25.25.0 01.177.073l6.25 6.25a.25.25.0 010 .354l-5.025 5.025a.25.25.0 01-.354.0l-6.25-6.25A.25.25.0 012.5 7.775zm-1.5.0V2.75C1 1.784 1.784 1 2.75 1h5.025c.464.0.91.184 1.238.513l6.25 6.25a1.75 1.75.0 010 2.474l-5.026 5.026a1.75 1.75.0 01-2.474.0l-6.25-6.25A1.75 1.75.0 011 7.775zM6 5a1 1 0 100 2 1 1 0 000-2z"/></svg>
+web</a></div></div></div><article class="markdown-body entry-content container-lg"><aside class=toc-wrapper><nav id=TableOfContents></nav></aside><div class="Box-body px-5 pb-5" style=z-index:1><p>这里将介绍如何使用vue-cli快速进行应用工程化。在此之前,需要进行一些额外的操作:</p><pre>
+npm config set registry http://registry.npmmirror.com
+npm install -g @vue/cli@4.5.8
+</pre><p>这里先配置其镜像地址为国内的淘宝镜像,之后使用全局方式安装vue-cli,版本为<code>4.5.8</code>。对于版本的选择可以使用如下的方式进行查看:</p><pre>
+npm view @vue/cli versions
+</pre><p>一切准备就绪后,就可以开始后续的操作了。首先创建一个应用:</p><pre>
+$ vue create hello-world
+</pre><p>当然也可以使用<code>vue ui</code>以图形化界面的方式进行项目的创建。整个过程需要联网,否则是无法成功创建项目的。其中<code>src/main.js</code>中的代码如下:</p><pre tabindex=0><code>import { createApp } from &#39;vue&#39;
+import App from &#39;./App.vue&#39;
+
+createApp(App).mount(&#39;#app&#39;)
+</code></pre><p>接着使用如下的命令运行vue项目:</p><pre>
+npm run serve
+</pre><p>为了后续可以在vue中使用HTTP请求,我们可以选择安装axios库,在项目工程目录下运行如下命令:</p><pre>
+$ npm install --save axios vue-axios
+</pre><p>安装完成可以在<code>package.json</code>文件中看到更新后的依赖信息:</p><pre>
+"dependencies": {
+    "axios": "^1.11.0",
+    "core-js": "^3.8.3",
+    "vue": "^3.2.13",
+    "vue-axios": "^3.5.2"
+  },
+</pre><p>下面我们使用Element-Plus为界面进行美化,在此之前先进行安装相应的库:</p><pre>
+$ npm install --save element-plus
+</pre><p>在<code>main.js</code>中添加如下的内容:</p><pre tabindex=0><code>import ElementPlus from &#39;element-plus&#39;
+import &#39;element-plus/dist/index.css&#39;
+
+const app = createApp(App)
+app.use(ElementPlus)
+app.mount(&#39;#app&#39;)
+</code></pre><p>我们为之前的例子添加1个按钮,当点击时将IP地址对应的经纬度显示出来,其对应代码如下:</p><pre tabindex=0><code>&lt;template&gt;
+&lt;el-button type=&#34;success&#34; @click=&#34;check_ip&#34;&gt;成功&lt;/el-button&gt;
+&lt;el-table :data=&#34;tableData&#34;&gt;
+    &lt;el-table-column prop=&#34;regionName&#34; label=&#34;省份&#34;&gt;&lt;/el-table-column&gt;
+    &lt;el-table-column prop=&#34;city&#34; label=&#34;城市&#34;&gt;&lt;/el-table-column&gt;
+    &lt;el-table-column prop=&#34;lat&#34; label=&#34;纬度&#34;&gt;&lt;/el-table-column&gt;
+    &lt;el-table-column prop=&#34;lon&#34; label=&#34;经度&#34;&gt;&lt;/el-table-column&gt;
+&lt;/el-table&gt;
+&lt;/template&gt;
+
+&lt;script&gt;
+import axios from &#34;axios&#34;
+export default {
+  name: &#39;HelloWorld&#39;,
+  data(){
+    return {
+       tableData: []
+     }
+  },
+  props: {
+    msg: String
+  },
+  methods:{
+     check_ip(){
+       axios.get(&#34;http://ip-api.com/json/114.114.114.114&#34;).then(res=&gt;{
+       this.tableData.push(res.data);
+      }).catch(err=&gt;{
+        console.error(err)
+      });
+     }
+  }
+}
+&lt;/script&gt;
+</code></pre><p>一切准备就绪后就可以使用下面的命令构建工程了:</p><pre>
+npm run build
+</pre><p>紧接着我们来看vue的路由管理,首先安装<code>vue-router</code>模块。</p><pre>
+npm install vue-router@4 -s
+</pre><p>路由的作用是页面管理,我们将定义好的Vue组件绑定到指定的路由,然后通过路由指定在何时或何处渲染这个组件。在<code>src/components</code>目录下创建2个文件,其中<code>MyDemo1.vue</code>的内容如下:</p><pre tabindex=0><code>&lt;template&gt;
+  &lt;h1&gt;示例页面1&lt;/h1&gt;
+&lt;/template&gt;
+&lt;script&gt;
+export default {	
+};
+&lt;/script&gt;
+</code></pre><p>而<code>MyDemo2.vue</code>的内容如下:</p><pre tabindex=0><code>&lt;template&gt;
+  &lt;h1&gt;示例页面2&lt;/h1&gt;
+&lt;/template&gt;
+&lt;script&gt;
+export default {	
+};
+&lt;/script&gt;
+</code></pre><p>接着修改<code>App.vue</code>文件的内容:</p><pre tabindex=0><code>&lt;template&gt;
+  &lt;h1&gt;Hello App!&lt;/h1&gt;
+  &lt;p&gt;
+    &lt;RouterLink to=&#34;/demo1&#34;&gt;页面一&lt;/RouterLink&gt;
+    &lt;br/&gt;
+    &lt;RouterLink to=&#34;/demo2&#34;&gt;页面二&lt;/RouterLink&gt;
+  &lt;/p&gt;
+  &lt;RouterView /&gt;
+&lt;/template&gt;
+
+&lt;script&gt;
+export default {
+  name: &#39;App&#39;,
+  components: {
+  }
+}
+&lt;/script&gt;
+</code></pre><p>其中<code>router-link</code>组件是一个自定义的链接组件,其允许在不重新加载页面的情况下更改页面的URL。而<code>router-view</code>用来渲染与当前URL对应的组件。
+再修改项目中的<code>main.js</code>文件,在其中进行路由的定义与注册。</p><pre tabindex=0><code>import { createRouter, createWebHashHistory } from &#34;vue-router&#34;
+
+import Demo1 from &#34;./components/MyDemo1.vue&#34;
+import Demo2 from &#34;./components/MyDemo2.vue&#34;
+
+const app = createApp(App)
+const routes = [
+  { path: &#34;/demo1&#34;, component: Demo1 },
+  { path: &#34;/demo2&#34;, component: Demo2  }
+]
+const router = createRouter({
+  history: createWebHashHistory(),
+  routes
+})
+
+const app = createApp(App)
+app.use(router)
+app.use(ElementPlus,VueAxios,axios)
+app.mount(&#39;#app&#39;)
+</code></pre><p>最后我们来看下如何将上述多个页面整合在一起,首先是对<code>HelloWorld.vue</code>中的修改:</p><pre tabindex=0><code>&lt;template&gt;
+  &lt;div class=&#34;hello&#34;&gt;
+    &lt;el-container&gt;
+      &lt;el-aside width=&#34;100px&#34;&gt;
+        &lt;el-menu :default-active=&#34;$route.path&#34; router=true&gt;
+          &lt;el-menu-item index=&#34;/&#34;&gt;首页&lt;/el-menu-item&gt;
+          &lt;el-menu-item index=&#34;/demo1&#34;&gt;测试1&lt;/el-menu-item&gt;
+          &lt;el-menu-item index=&#34;/demo2&#34;&gt;测试2&lt;/el-menu-item&gt;
+          &lt;el-menu-item index=&#34;/user/zhangsan/123&#34;&gt;用户&lt;/el-menu-item&gt;
+        &lt;/el-menu&gt;
+      &lt;/el-aside&gt;
+    &lt;el-main&gt;
+        &lt;el-header&gt;
+         &lt;h1&gt;{{ msg }}&lt;/h1&gt;
+        &lt;/el-header&gt;
+        &lt;RouterView /&gt;
+    &lt;/el-main&gt;
+    &lt;/el-container&gt;
+    &lt;el-footer&gt;
+      版权所有,请勿转载
+    &lt;/el-footer&gt;
+  &lt;/div&gt;
+&lt;/template&gt;
+</code></pre><p>通过Element-Plus添加竖直菜单栏,并使用Vue-Router的路由进行跳转。</p><p>参考文章:</p><blockquote><p><a href=https://element-plus.sxtxhy.com/zh-CN/guide/installation.html#unpkg>https://element-plus.sxtxhy.com/zh-CN/guide/installation.html#unpkg</a></p></blockquote><div class=reward><span>如果喜欢这篇文章或对您有帮助，可以：[☕] 请我喝杯咖啡 | [💓] 小额赞助</span><br><img src=https://zhuzhulang.github.io/blog/img/qr_alipay.jpg>
+<img src=https://zhuzhulang.github.io/blog/img/qr_wechat.png></div></article></div></div></div></div></div></div></main></div><script type=application/javascript src=https://zhuzhulang.github.io/blog/js/toc.js></script><link rel=stylesheet href=https://zhuzhulang.github.io/blog/css/toc.css></div><div class="footer container-xl width-full p-responsive"><div class="position-relative d-flex flex-row-reverse flex-lg-row flex-wrap flex-lg-nowrap flex-justify-center flex-lg-justify-between flex-sm-items-center pt-6 pb-2 mt-6 f6 text-gray border-top border-gray-light"><a aria-label=Homepage title=GitHub class="footer-octicon d-none d-lg-block mr-lg-4" href=https://zhuzhulang.github.io/blog/><svg height="24" class="octicon octicon-mark-github" viewBox="0 0 16 16" width="24"><path fill-rule="evenodd" d="M8 0C3.58.0.0 3.58.0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38.0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95.0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12.0.0.67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15.0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48.0 1.07-.01 1.93-.01 2.2.0.21.15.46.55.38A8.013 8.013.0 0016 8c0-4.42-3.58-8-8-8z"/></svg></a><ul class="list-style-none d-flex flex-wrap col-12 flex-justify-center flex-lg-justify-between mb-2 mb-lg-0"><li class="mr-3 mr-lg-0">✨ 原创不易，转载请注明作者和链接哦~</li><li class="mr-3 mr-lg-0">GitHub and the Invertocat logo are trademarks of <a href=https://github.com/>GitHub, Inc.</a></li></ul></div><div class="d-flex flex-justify-center pb-6"><span class="f6 text-gray-light"></span></div></div></body><script type=application/javascript src=https://zhuzhulang.github.io/blog/js/github-style.js></script><script src=https://cdn.jsdelivr.net/npm/fuse.js/dist/fuse.min.js></script><script type=application/javascript src=https://zhuzhulang.github.io/blog/js/search.js></script><script async src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js></script></html>
