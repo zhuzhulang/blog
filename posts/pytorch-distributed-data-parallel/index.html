@@ -1,0 +1,155 @@
+<!doctype html><html lang=zh-cn><head><meta charset=utf-8><meta name=viewport content="width=device-width"><script type=application/javascript src=https://zhuzhulang.github.io/blog/js/theme-mode.js></script><link rel=stylesheet href=https://zhuzhulang.github.io/blog/css/frameworks.min.css><link rel=stylesheet href=https://zhuzhulang.github.io/blog/css/github.min.css><link rel=stylesheet href=https://zhuzhulang.github.io/blog/css/github-style.css><link rel=stylesheet href=https://zhuzhulang.github.io/blog/css/light.css><link rel=stylesheet href=https://zhuzhulang.github.io/blog/css/dark.css><link rel=stylesheet href=https://zhuzhulang.github.io/blog/css/syntax.css><title>PyTorch分布式数据并行入门 - 码力全开</title>
+<link rel=icon type=image/x-icon href=https://zhuzhulang.github.io/blog/images/github-mark.png><meta name=theme-color content="#1e2327"><meta name=description content="如何使用DDP实现分布式数据并行训练"><meta name=keywords content='blog,ai,in action'><meta name=robots content="noodp"><link rel=canonical href=https://zhuzhulang.github.io/blog/posts/pytorch-distributed-data-parallel/><meta name=twitter:card content="summary"><meta name=twitter:title content="PyTorch分布式数据并行入门 - 码力全开"><meta name=twitter:description content="如何使用DDP实现分布式数据并行训练"><meta name=twitter:site content="https://zhuzhulang.github.io/blog/"><meta name=twitter:creator content><meta name=twitter:image content="https://zhuzhulang.github.io/blog/"><meta property="og:type" content="article"><meta property="og:title" content="PyTorch分布式数据并行入门 - 码力全开"><meta property="og:description" content="如何使用DDP实现分布式数据并行训练"><meta property="og:url" content="https://zhuzhulang.github.io/blog/posts/pytorch-distributed-data-parallel/"><meta property="og:site_name" content="PyTorch分布式数据并行入门"><meta property="og:image" content="https://zhuzhulang.github.io/blog/"><meta property="og:image:width" content="2048"><meta property="og:image:height" content="1024"><meta property="article:published_time" content="2025-08-04 10:45:50 +0800 CST"></head><script type=text/javascript src="//api.wukongtongji.com/c?_=793054730599555072" async></script><body><div style=position:relative><header class="Header js-details-container Details px-3 px-md-4 px-lg-5 flex-wrap flex-md-nowrap open Details--on"><div class="Header-item mobile-none" style=margin-top:-4px;margin-bottom:-4px><a class=Header-link href=https://zhuzhulang.github.io/blog/><img class=octicon height=32 width=32 src=https://zhuzhulang.github.io/blog/images/github-mark-white.png></a></div><div class="Header-item d-md-none"><button class="Header-link btn-link js-details-target" type=button onclick='document.querySelector("#header-search").style.display=document.querySelector("#header-search").style.display=="none"?"block":"none"'><svg height="24" class="octicon octicon-three-bars" viewBox="0 0 16 16" width="24"><path fill-rule="evenodd" d="M1 2.75A.75.75.0 011.75 2h12.5a.75.75.0 110 1.5H1.75A.75.75.0 011 2.75zm0 5A.75.75.0 011.75 7h12.5a.75.75.0 110 1.5H1.75A.75.75.0 011 7.75zM1.75 12a.75.75.0 100 1.5h12.5a.75.75.0 100-1.5H1.75z"/></svg></button></div><div style=display:none id=header-search class="Header-item Header-item--full flex-column flex-md-row width-full flex-order-2 flex-md-order-none mr-0 mr-md-3 mt-3 mt-md-0 Details-content--hidden-not-important d-md-flex"><div class="Header-search header-search flex-auto js-site-search position-relative flex-self-stretch flex-md-self-auto mb-3 mb-md-0 mr-0 mr-md-3 scoped-search site-scoped-search js-jump-to"><div class=position-relative><form target=_blank id=search-form accept-charset=UTF-8 method=get autocomplete=off><label class="Header-search-label form-control input-sm header-search-wrapper p-0 js-chromeless-input-container header-search-wrapper-jump-to position-relative d-flex flex-justify-between flex-items-center"><input type=text class="Header-search-input form-control input-sm header-search-input jump-to-field js-jump-to-field js-site-search-focus js-site-search-field is-clearable" name=q placeholder=Search autocomplete=off></label></form></div></div></div><div class="Header-item Header-item--full flex-justify-center d-md-none position-relative"><a class=Header-link href=https://zhuzhulang.github.io/blog/><img class="octicon octicon-mark-github v-align-middle" height=32 width=32 src=https://zhuzhulang.github.io/blog/images/github-mark-white.png></a></div><div class=Header-item style=margin-right:0><a href=javascript:void(0) class="Header-link no-select" onclick=switchTheme()><svg style="fill:var(--color-profile-color-modes-toggle-moon)" class="no-select" viewBox="0 0 16 16" width="16" height="16"><path fill-rule="evenodd" clip-rule="evenodd" d="M4.52208 7.71754c3.05612.0 5.53362-2.47748 5.53362-5.5336C10.0557 1.93498 10.0392 1.68986 10.0074 1.44961 9.95801 1.07727 10.3495.771159 10.6474.99992c1.4679 1.12724 2.4141 2.90007 2.4141 4.89391.0 3.40575-2.7609 6.16667-6.16665 6.16667-2.94151.0-5.40199-2.0595-6.018122-4.81523C.794841 6.87902 1.23668 6.65289 1.55321 6.85451 2.41106 7.40095 3.4296 7.71754 4.52208 7.71754z"/></svg></a></div></header></div><div id=search-result class="container-lg px-3 new-discussion-timeline" style=display:none></div><div class=application-main><div><main><div class="gisthead pagehead bg-gray-light pb-0 pt-3 mb-4"><div class=px-0><div class="mb-3 d-flex px-3 px-md-3 px-lg-5"><div class="flex-auto min-width-0 width-fit mr-3"><div class=d-flex><div class="d-none d-md-block"><a class="avatar mr-2 flex-shrink-0" href=https://zhuzhulang.github.io/blog/><img class=avatar-user src=https://zhuzhulang.github.io/blog/images/avatar.jpg width=32 height=32></a></div><div class="d-flex flex-column"><h1 class="break-word f3 text-normal mb-md-0 mb-1"><span class=author><a href=https://zhuzhulang.github.io/blog/>码力全开</a>
+</span><span class=path-divider>/</span>
+<strong class="css-truncate css-truncate-target mr-1" style=max-width:410px><a href=https://zhuzhulang.github.io/blog/posts/pytorch-distributed-data-parallel/>PyTorch分布式数据并行入门</a></strong></h1><div class="note m-0">Created <relative-time datetime="Mon, 04 Aug 2025 10:45:50 +0800" class=no-wrap>Mon, 04 Aug 2025 10:45:50 +0800</relative-time>
+<span class=file-info-divider></span>
+Modified <relative-time datetime="Tue, 05 Aug 2025 09:52:18 +0800" class=no-wrap>Tue, 05 Aug 2025 09:52:18 +0800</relative-time></div></div></div></div></div></div></div><div class="container-lg px-3 new-discussion-timeline"><div class="repository-content gist-content"><div><div class="js-gist-file-update-container js-task-list-container file-box"><div id=file-pytest class="file my-2"><div id=post-header class="file-header d-flex flex-md-items-center flex-items-start sticky-header" style=z-index:2><div class="file-info d-flex flex-md-items-center flex-items-start flex-order-1 flex-auto"><div class="text-mono f6 flex-auto pr-3 flex-order-2 flex-md-order-1 mt-2 mt-md-0"><summary id=toc-toggle onclick=clickToc() class="btn btn-octicon m-0 mr-2 p-2"><svg aria-hidden="true" viewBox="0 0 16 16" height="16" width="16" class="octicon octicon-list-unordered"><path fill-rule="evenodd" d="M2 4a1 1 0 100-2 1 1 0 000 2zm3.75-1.5a.75.75.0 000 1.5h8.5a.75.75.0 000-1.5h-8.5zm0 5a.75.75.0 000 1.5h8.5a.75.75.0 000-1.5h-8.5zm0 5a.75.75.0 000 1.5h8.5a.75.75.0 000-1.5h-8.5zM3 8A1 1 0 111 8a1 1 0 012 0zm-1 6a1 1 0 100-2 1 1 0 000 2z"/></svg></summary><details-menu class=SelectMenu id=toc-details style="display: none;"><div class="SelectMenu-modal rounded-3 mt-1" style=max-height:340px><div class="SelectMenu-list SelectMenu-list--borderless p-2" style=overscroll-behavior:contain id=toc-list></div></div></details-menu>1242 Words
+<span class=file-info-divider></span>
+2 min
+<span class=file-info-divider></span>
+<svg fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" viewBox="0 0 24 20" height="20"><path d="M12 10c-7 0-11 7-11 7s3.5 7 11 7 11-7 11-7-4-7-11-7z"/><circle r="4" cy="16" cx="12"/></svg>
+<span id=busuanzi_container_page_pv><span id=busuanzi_value_page_pv></span></span></div><div class="file-actions flex-order-2 pt-0"><a class="muted-link mr-3" href=https://zhuzhulang.github.io/blog/tags/ai><svg class="octicon octicon-tag" viewBox="0 0 16 16" width="16" height="16"><path fill-rule="evenodd" d="M2.5 7.775V2.75a.25.25.0 01.25-.25h5.025a.25.25.0 01.177.073l6.25 6.25a.25.25.0 010 .354l-5.025 5.025a.25.25.0 01-.354.0l-6.25-6.25A.25.25.0 012.5 7.775zm-1.5.0V2.75C1 1.784 1.784 1 2.75 1h5.025c.464.0.91.184 1.238.513l6.25 6.25a1.75 1.75.0 010 2.474l-5.026 5.026a1.75 1.75.0 01-2.474.0l-6.25-6.25A1.75 1.75.0 011 7.775zM6 5a1 1 0 100 2 1 1 0 000-2z"/></svg>
+AI</a></div></div></div><article class="markdown-body entry-content container-lg"><aside class=toc-wrapper><nav id=TableOfContents></nav></aside><div class="Box-body px-5 pb-5" style=z-index:1><p>当要训练的模型数据比较大时,可以通过并行技术加速训练。在PyTorch的distributed包中提供了分布式数据并行的实现。</p><p>首先先介绍下DataParallel(缩写为DP)与DistributedDataParallel(缩写为DDP)的区别。其中前者是单进程多线程的,其只能在单机上进行运行。相反后者是多进程并支持单/多机训练的。</p><p>为了创建DDP模型,首先需要正确设置进程组。下面是一个简单的示例代码:</p><pre tabindex=0><code>import os
+import sys
+import tempfile
+import torch
+import torch.distributed as dist
+import torch.nn as nn
+import torch.optim as optim
+import torch.multiprocessing as mp
+
+from torch.nn.parallel import DistributedDataParallel as DDP
+
+def setup(rank, world_size):
+    os.environ[&#39;MASTER_ADDR&#39;] = &#39;localhost&#39;
+    os.environ[&#39;MASTER_PORT&#39;] = &#39;12355&#39;
+
+    # initialize the process group
+    dist.init_process_group(&#34;gloo&#34;, rank=rank, world_size=world_size)
+
+def cleanup():
+    dist.destroy_process_group()
+</code></pre><p>其中关于DistributedDataParallel的内容可以<a href=https://docs.pytorch.org/docs/2.0/generated/torch.nn.parallel.DistributedDataParallel.html#torch.nn.parallel.DistributedDataParallel>参考</a>。</p><p>需要注意的是,在Windows系统上<code>torch.distributed</code>包只支持Gloo、FileStore和TcpStore后端。通过<code>init_process_group</code>初始化进程组,因为分布式数据并行整个还是需要进行通信的,否则也不知道其完成进度。</p><p>之后创建1个简单的模块,并使用DDP进行装饰并使用一些虚拟的输入数据。</p><pre tabindex=0><code>class ToyModel(nn.Module):
+    def __init__(self):
+        super(ToyModel, self).__init__()
+        self.net1 = nn.Linear(10, 10)
+        self.relu = nn.ReLU()
+        self.net2 = nn.Linear(10, 5)
+
+    def forward(self, x):
+        return self.net2(self.relu(self.net1(x)))
+
+
+def demo_basic(rank, world_size):
+    print(f&#34;Running basic DDP example on rank {rank}.&#34;)
+    # 初始化GPU进程组
+    setup(rank, world_size)
+
+    # create model and move it to GPU with id rank
+    model = ToyModel().to(rank)
+    ddp_model = DDP(model, device_ids=[rank])
+
+    loss_fn = nn.MSELoss()
+    optimizer = optim.SGD(ddp_model.parameters(), lr=0.001)
+
+    optimizer.zero_grad()
+    outputs = ddp_model(torch.randn(20, 10))
+    labels = torch.randn(20, 5).to(rank)
+    loss_fn(outputs, labels).backward()
+    optimizer.step()
+    
+    # 对进程组进行清理
+    cleanup()
+    print(f&#34;Finished running basic DDP example on rank {rank}.&#34;)
+
+
+def run_demo(demo_fn, world_size):
+    mp.spawn(demo_fn,
+             args=(world_size,),
+             nprocs=world_size,
+             join=True)
+</code></pre><p>而点对点通信主要通过阻塞的<code>send</code>和<code>recv</code>函数来实现,或者使用立即计数的<code>isend</code>和<code>irecv</code>函数。关于其集体的通信的方式主要有如下几种:</p><ol><li>Scatter,平均划分</li><li>Gather,汇聚</li><li>Reduce</li><li>All-Reduce</li><li>Broadcast,广播</li><li>All-Gather</li></ol><p>Gather与Reduce都将数据汇总在一个节点上,但是Reduce会对这些数据进行相加得到1个值,而Gather是得到1个列表。</p><p>与点对点通信相反,集体的方式允许组内所有进程进行通信。可以通过<code>dist.new_group</code>方法创建一个组。</p><p>而数据的采样可以使用<a href=https://docs.pytorch.org/docs/2.0/data.html#torch.utils.data.distributed.DistributedSampler>DistributedSampler</a>。这样可以确保分布式中数据量保持不变。</p><p>下面是在单机双GPU上训练的模型代码,比如在T4 x 2的服务器上:</p><pre tabindex=0><code>import os
+import torch
+import torch.nn as nn
+import torch.optim as optim
+import torch.distributed as dist
+from torch.nn.parallel import DistributedDataParallel as DDP
+from torch.utils.data import Dataset, DataLoader
+from torch.utils.data.distributed import DistributedSampler
+
+# 1. 定义简单模型
+class SimpleModel(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.net = nn.Sequential(
+            nn.Linear(10, 100),
+            nn.ReLU(),
+            nn.Linear(100, 50),
+            nn.ReLU(),
+            nn.Linear(50, 2)
+        )
+    
+    def forward(self, x):
+        return self.net(x)
+
+# 2. 定义虚拟数据集
+class DummyDataset(Dataset):
+    def __init__(self, size=10000):
+        self.data = torch.randn(size, 10)
+        self.targets = torch.randint(0, 2, (size,))
+    
+    def __len__(self):
+        return len(self.data)
+    
+    def __getitem__(self, idx):
+        return self.data[idx], self.targets[idx]
+
+# 3. 训练函数
+def train(rank, world_size):
+    # 初始化进程组
+    os.environ[&#39;MASTER_ADDR&#39;] = &#39;localhost&#39;
+    os.environ[&#39;MASTER_PORT&#39;] = &#39;12355&#39;
+    dist.init_process_group(&#34;nccl&#34;, rank=rank, world_size=world_size)
+    
+    # 设置当前GPU设备
+    torch.cuda.set_device(rank)
+    
+    # 创建模型并移至GPU
+    model = SimpleModel().to(rank)
+    model = DDP(model, device_ids=[rank])
+    
+    # 定义损失函数和优化器
+    criterion = nn.CrossEntropyLoss()
+    optimizer = optim.SGD(model.parameters(), lr=0.01)
+    
+    # 准备数据加载器
+    dataset = DummyDataset()
+    sampler = DistributedSampler(dataset, num_replicas=world_size, rank=rank)
+    dataloader = DataLoader(dataset, batch_size=32, sampler=sampler)
+    
+    # 训练循环
+    for epoch in range(10):
+        sampler.set_epoch(epoch)  # 确保每个epoch有不同的shuffle
+        model.train()
+        
+        for batch_idx, (data, target) in enumerate(dataloader):
+            data, target = data.to(rank), target.to(rank)
+            optimizer.zero_grad()
+            output = model(data)
+            loss = criterion(output, target)
+            loss.backward()
+            optimizer.step()
+            
+            if batch_idx % 100 == 0:
+                print(f&#34;Rank {rank}, Epoch {epoch}, Batch {batch_idx}, Loss: {loss.item()}&#34;)
+    
+    # 清理进程组
+    dist.destroy_process_group()
+
+if __name__ == &#34;__main__&#34;:
+    world_size = 2  # 使用2个GPU
+    torch.multiprocessing.spawn(train, args=(world_size,), nprocs=world_size, join=True)
+</code></pre><p>将上述代码保存在<code>ddp_train.py</code>中,之后在单机双GPU的Linux系统上进行运行:</p><pre>
+python ddp_train.py
+</pre><p>之后就可以看到其输出了。</p><p>最后,还可以借助其他一些框架,如DeepSpeed简化分布式数据的训练过程。</p><p>参考文章:</p><blockquote><p><a href=https://docs.pytorch.org/tutorials/intermediate/ddp_tutorial.html>https://docs.pytorch.org/tutorials/intermediate/ddp_tutorial.html</a></p></blockquote><blockquote><p><a href=https://docs.pytorch.org/tutorials/intermediate/dist_tuto.html>https://docs.pytorch.org/tutorials/intermediate/dist_tuto.html</a></p></blockquote><blockquote><p><a href=https://www.cnblogs.com/liyier/p/18136458>https://www.cnblogs.com/liyier/p/18136458</a></p></blockquote><div class=reward><span>如果喜欢这篇文章或对您有帮助，可以：[☕] 请我喝杯咖啡 | [💓] 小额赞助</span><br><img src=https://zhuzhulang.github.io/blog/img/qr_alipay.jpg>
+<img src=https://zhuzhulang.github.io/blog/img/qr_wechat.png></div></article></div></div></div></div></div></div></main></div><script type=application/javascript src=https://zhuzhulang.github.io/blog/js/toc.js></script><link rel=stylesheet href=https://zhuzhulang.github.io/blog/css/toc.css></div><div class="footer container-xl width-full p-responsive"><div class="position-relative d-flex flex-row-reverse flex-lg-row flex-wrap flex-lg-nowrap flex-justify-center flex-lg-justify-between flex-sm-items-center pt-6 pb-2 mt-6 f6 text-gray border-top border-gray-light"><a aria-label=Homepage title=GitHub class="footer-octicon d-none d-lg-block mr-lg-4" href=https://zhuzhulang.github.io/blog/><svg height="24" class="octicon octicon-mark-github" viewBox="0 0 16 16" width="24"><path fill-rule="evenodd" d="M8 0C3.58.0.0 3.58.0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38.0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95.0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12.0.0.67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15.0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48.0 1.07-.01 1.93-.01 2.2.0.21.15.46.55.38A8.013 8.013.0 0016 8c0-4.42-3.58-8-8-8z"/></svg></a><ul class="list-style-none d-flex flex-wrap col-12 flex-justify-center flex-lg-justify-between mb-2 mb-lg-0"><li class="mr-3 mr-lg-0">✨ 原创不易，转载请注明作者和链接哦~</li><li class="mr-3 mr-lg-0">GitHub and the Invertocat logo are trademarks of <a href=https://github.com/>GitHub, Inc.</a></li></ul></div><div class="d-flex flex-justify-center pb-6"><span class="f6 text-gray-light"></span></div></div></body><script type=application/javascript src=https://zhuzhulang.github.io/blog/js/github-style.js></script><script src=https://cdn.jsdelivr.net/npm/fuse.js/dist/fuse.min.js></script><script type=application/javascript src=https://zhuzhulang.github.io/blog/js/search.js></script><script async src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js></script></html>
