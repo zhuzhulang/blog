@@ -1,0 +1,221 @@
+<!doctype html><html lang=zh-cn><head><meta charset=utf-8><meta name=viewport content="width=device-width"><script type=application/javascript src=https://zhuzhulang.github.io/blog/js/theme-mode.js></script><link rel=stylesheet href=https://zhuzhulang.github.io/blog/css/frameworks.min.css><link rel=stylesheet href=https://zhuzhulang.github.io/blog/css/github.min.css><link rel=stylesheet href=https://zhuzhulang.github.io/blog/css/github-style.css><link rel=stylesheet href=https://zhuzhulang.github.io/blog/css/light.css><link rel=stylesheet href=https://zhuzhulang.github.io/blog/css/dark.css><link rel=stylesheet href=https://zhuzhulang.github.io/blog/css/syntax.css><title>YOLO11更换Backbone为ShuffleNetV2 - 码力全开</title>
+<link rel=icon type=image/x-icon href=https://zhuzhulang.github.io/blog/images/github-mark.png><meta name=theme-color content="#1e2327"><meta name=description content="如何替换YOLO11中Backbone为ShuffleNetV2"><meta name=keywords content='blog,ai,in action'><meta name=robots content="noodp"><link rel=canonical href=https://zhuzhulang.github.io/blog/posts/how-to-replace-backbone-to-shufflenetv2-in-yolo11/><meta name=twitter:card content="summary"><meta name=twitter:title content="YOLO11更换Backbone为ShuffleNetV2 - 码力全开"><meta name=twitter:description content="如何替换YOLO11中Backbone为ShuffleNetV2"><meta name=twitter:site content="https://zhuzhulang.github.io/blog/"><meta name=twitter:creator content><meta name=twitter:image content="https://zhuzhulang.github.io/blog/"><meta property="og:type" content="article"><meta property="og:title" content="YOLO11更换Backbone为ShuffleNetV2 - 码力全开"><meta property="og:description" content="如何替换YOLO11中Backbone为ShuffleNetV2"><meta property="og:url" content="https://zhuzhulang.github.io/blog/posts/how-to-replace-backbone-to-shufflenetv2-in-yolo11/"><meta property="og:site_name" content="YOLO11更换Backbone为ShuffleNetV2"><meta property="og:image" content="https://zhuzhulang.github.io/blog/"><meta property="og:image:width" content="2048"><meta property="og:image:height" content="1024"><meta property="article:published_time" content="2025-11-28 20:00:51 +0800 CST"></head><script type=text/javascript src="//api.wukongtongji.com/c?_=793054730599555072" async></script><body><div style=position:relative><header class="Header js-details-container Details px-3 px-md-4 px-lg-5 flex-wrap flex-md-nowrap open Details--on"><div class="Header-item mobile-none" style=margin-top:-4px;margin-bottom:-4px><a class=Header-link href=https://zhuzhulang.github.io/blog/><img class=octicon height=32 width=32 src=https://zhuzhulang.github.io/blog/images/github-mark-white.png></a></div><div class="Header-item d-md-none"><button class="Header-link btn-link js-details-target" type=button onclick='document.querySelector("#header-search").style.display=document.querySelector("#header-search").style.display=="none"?"block":"none"'><svg height="24" class="octicon octicon-three-bars" viewBox="0 0 16 16" width="24"><path fill-rule="evenodd" d="M1 2.75A.75.75.0 011.75 2h12.5a.75.75.0 110 1.5H1.75A.75.75.0 011 2.75zm0 5A.75.75.0 011.75 7h12.5a.75.75.0 110 1.5H1.75A.75.75.0 011 7.75zM1.75 12a.75.75.0 100 1.5h12.5a.75.75.0 100-1.5H1.75z"/></svg></button></div><div style=display:none id=header-search class="Header-item Header-item--full flex-column flex-md-row width-full flex-order-2 flex-md-order-none mr-0 mr-md-3 mt-3 mt-md-0 Details-content--hidden-not-important d-md-flex"><div class="Header-search header-search flex-auto js-site-search position-relative flex-self-stretch flex-md-self-auto mb-3 mb-md-0 mr-0 mr-md-3 scoped-search site-scoped-search js-jump-to"><div class=position-relative><form target=_blank id=search-form accept-charset=UTF-8 method=get autocomplete=off><label class="Header-search-label form-control input-sm header-search-wrapper p-0 js-chromeless-input-container header-search-wrapper-jump-to position-relative d-flex flex-justify-between flex-items-center"><input type=text class="Header-search-input form-control input-sm header-search-input jump-to-field js-jump-to-field js-site-search-focus js-site-search-field is-clearable" name=q placeholder=Search autocomplete=off></label></form></div></div></div><div class="Header-item Header-item--full flex-justify-center d-md-none position-relative"><a class=Header-link href=https://zhuzhulang.github.io/blog/><img class="octicon octicon-mark-github v-align-middle" height=32 width=32 src=https://zhuzhulang.github.io/blog/images/github-mark-white.png></a></div><div class=Header-item style=margin-right:0><a href=javascript:void(0) class="Header-link no-select" onclick=switchTheme()><svg style="fill:var(--color-profile-color-modes-toggle-moon)" class="no-select" viewBox="0 0 16 16" width="16" height="16"><path fill-rule="evenodd" clip-rule="evenodd" d="M4.52208 7.71754c3.05612.0 5.53362-2.47748 5.53362-5.5336C10.0557 1.93498 10.0392 1.68986 10.0074 1.44961 9.95801 1.07727 10.3495.771159 10.6474.99992c1.4679 1.12724 2.4141 2.90007 2.4141 4.89391.0 3.40575-2.7609 6.16667-6.16665 6.16667-2.94151.0-5.40199-2.0595-6.018122-4.81523C.794841 6.87902 1.23668 6.65289 1.55321 6.85451 2.41106 7.40095 3.4296 7.71754 4.52208 7.71754z"/></svg></a></div></header></div><div id=search-result class="container-lg px-3 new-discussion-timeline" style=display:none></div><div class=application-main><div><main><div class="gisthead pagehead bg-gray-light pb-0 pt-3 mb-4"><div class=px-0><div class="mb-3 d-flex px-3 px-md-3 px-lg-5"><div class="flex-auto min-width-0 width-fit mr-3"><div class=d-flex><div class="d-none d-md-block"><a class="avatar mr-2 flex-shrink-0" href=https://zhuzhulang.github.io/blog/><img class=avatar-user src=https://zhuzhulang.github.io/blog/images/avatar.jpg width=32 height=32></a></div><div class="d-flex flex-column"><h1 class="break-word f3 text-normal mb-md-0 mb-1"><span class=author><a href=https://zhuzhulang.github.io/blog/>码力全开</a>
+</span><span class=path-divider>/</span>
+<strong class="css-truncate css-truncate-target mr-1" style=max-width:410px><a href=https://zhuzhulang.github.io/blog/posts/how-to-replace-backbone-to-shufflenetv2-in-yolo11/>YOLO11更换Backbone为ShuffleNetV2</a></strong></h1><div class="note m-0">Created <relative-time datetime="Fri, 28 Nov 2025 20:00:51 +0800" class=no-wrap>Fri, 28 Nov 2025 20:00:51 +0800</relative-time>
+<span class=file-info-divider></span>
+Modified <relative-time datetime="Sat, 29 Nov 2025 11:24:17 +0800" class=no-wrap>Sat, 29 Nov 2025 11:24:17 +0800</relative-time></div></div></div></div></div></div></div><div class="container-lg px-3 new-discussion-timeline"><div class="repository-content gist-content"><div><div class="js-gist-file-update-container js-task-list-container file-box"><div id=file-pytest class="file my-2"><div id=post-header class="file-header d-flex flex-md-items-center flex-items-start sticky-header" style=z-index:2><div class="file-info d-flex flex-md-items-center flex-items-start flex-order-1 flex-auto"><div class="text-mono f6 flex-auto pr-3 flex-order-2 flex-md-order-1 mt-2 mt-md-0"><summary id=toc-toggle onclick=clickToc() class="btn btn-octicon m-0 mr-2 p-2"><svg aria-hidden="true" viewBox="0 0 16 16" height="16" width="16" class="octicon octicon-list-unordered"><path fill-rule="evenodd" d="M2 4a1 1 0 100-2 1 1 0 000 2zm3.75-1.5a.75.75.0 000 1.5h8.5a.75.75.0 000-1.5h-8.5zm0 5a.75.75.0 000 1.5h8.5a.75.75.0 000-1.5h-8.5zm0 5a.75.75.0 000 1.5h8.5a.75.75.0 000-1.5h-8.5zM3 8A1 1 0 111 8a1 1 0 012 0zm-1 6a1 1 0 100-2 1 1 0 000 2z"/></svg></summary><details-menu class=SelectMenu id=toc-details style="display: none;"><div class="SelectMenu-modal rounded-3 mt-1" style=max-height:340px><div class="SelectMenu-list SelectMenu-list--borderless p-2" style=overscroll-behavior:contain id=toc-list></div></div></details-menu>1350 Words
+<span class=file-info-divider></span>
+5 min
+<span class=file-info-divider></span>
+<svg fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" viewBox="0 0 24 20" height="20"><path d="M12 10c-7 0-11 7-11 7s3.5 7 11 7 11-7 11-7-4-7-11-7z"/><circle r="4" cy="16" cx="12"/></svg>
+<span id=busuanzi_container_page_pv><span id=busuanzi_value_page_pv></span></span></div><div class="file-actions flex-order-2 pt-0"><a class="muted-link mr-3" href=https://zhuzhulang.github.io/blog/tags/ai><svg class="octicon octicon-tag" viewBox="0 0 16 16" width="16" height="16"><path fill-rule="evenodd" d="M2.5 7.775V2.75a.25.25.0 01.25-.25h5.025a.25.25.0 01.177.073l6.25 6.25a.25.25.0 010 .354l-5.025 5.025a.25.25.0 01-.354.0l-6.25-6.25A.25.25.0 012.5 7.775zm-1.5.0V2.75C1 1.784 1.784 1 2.75 1h5.025c.464.0.91.184 1.238.513l6.25 6.25a1.75 1.75.0 010 2.474l-5.026 5.026a1.75 1.75.0 01-2.474.0l-6.25-6.25A1.75 1.75.0 011 7.775zM6 5a1 1 0 100 2 1 1 0 000-2z"/></svg>
+AI
+</a><a class="muted-link mr-3" href=https://zhuzhulang.github.io/blog/tags/cv><svg class="octicon octicon-tag" viewBox="0 0 16 16" width="16" height="16"><path fill-rule="evenodd" d="M2.5 7.775V2.75a.25.25.0 01.25-.25h5.025a.25.25.0 01.177.073l6.25 6.25a.25.25.0 010 .354l-5.025 5.025a.25.25.0 01-.354.0l-6.25-6.25A.25.25.0 012.5 7.775zm-1.5.0V2.75C1 1.784 1.784 1 2.75 1h5.025c.464.0.91.184 1.238.513l6.25 6.25a1.75 1.75.0 010 2.474l-5.026 5.026a1.75 1.75.0 01-2.474.0l-6.25-6.25A1.75 1.75.0 011 7.775zM6 5a1 1 0 100 2 1 1 0 000-2z"/></svg>
+CV</a></div></div></div><article class="markdown-body entry-content container-lg"><aside class=toc-wrapper><nav id=TableOfContents></nav></aside><div class="Box-body px-5 pb-5" style=z-index:1><p>关于ShuffleNetV2网络结构的介绍可以<a href=https://www.cnblogs.com/ZOMI/articles/18561105>参考</a>。</p><p>下面是对应的实战部分,首先在ultralytics源码目录<code>nn/modules</code>下创建1个shufflenetv2模块,其代码如下:</p><pre tabindex=0><code>#encoding:utf-8
+import torch
+import torch.nn as nn
+
+def channel_shuffle(x, groups):
+    batchsize, num_channels, height, width = x.data.size()
+    channels_per_group = num_channels // groups
+    # reshape
+    x = x.view(batchsize, groups,
+               channels_per_group, height, width)
+    x = torch.transpose(x, 1, 2).contiguous()
+    # flatten
+    x = x.view(batchsize, -1, height, width)
+    return x
+
+
+class CBRM(nn.Module):           #conv BN ReLU Maxpool2d
+    def __init__(self, c1, c2):  # ch_in, ch_out
+        super(CBRM, self).__init__()
+        self.conv = nn.Sequential(
+            nn.Conv2d(c1, c2, kernel_size=3, stride=2, padding=1, bias=False),
+            nn.BatchNorm2d(c2),
+            nn.ReLU(inplace=True),
+        )
+        self.maxpool = nn.MaxPool2d(kernel_size=3, stride=2, padding=1, dilation=1, ceil_mode=False)
+
+    def forward(self, x):
+        return self.maxpool(self.conv(x))
+
+
+class Shuffle_Block(nn.Module):
+    def __init__(self, ch_in, ch_out, stride):
+        super(Shuffle_Block, self).__init__()
+        if not (1 &lt;= stride &lt;= 2):
+            raise ValueError(&#39;illegal stride value&#39;)
+        self.stride = stride
+        branch_features = ch_out // 2
+        assert (self.stride != 1) or (ch_in == branch_features &lt;&lt; 1)
+        if self.stride &gt; 1:
+            self.branch1 = nn.Sequential(
+                self.depthwise_conv(ch_in, ch_in, kernel_size=3, stride=self.stride, padding=1),
+                nn.BatchNorm2d(ch_in),
+
+                nn.Conv2d(ch_in, branch_features, kernel_size=1, stride=1, padding=0, bias=False),
+                nn.BatchNorm2d(branch_features),
+                nn.ReLU(inplace=True),
+            )
+        self.branch2 = nn.Sequential(
+            nn.Conv2d(ch_in if (self.stride &gt; 1) else branch_features,
+                      branch_features, kernel_size=1, stride=1, padding=0, bias=False),
+            nn.BatchNorm2d(branch_features),
+            nn.ReLU(inplace=True),
+            self.depthwise_conv(branch_features, branch_features, kernel_size=3, stride=self.stride, padding=1),
+            nn.BatchNorm2d(branch_features),
+            nn.Conv2d(branch_features, branch_features, kernel_size=1, stride=1, padding=0, bias=False),
+            nn.BatchNorm2d(branch_features),
+            nn.ReLU(inplace=True),
+        )
+
+    @staticmethod
+    def depthwise_conv(i, o, kernel_size, stride=1, padding=0, bias=False):
+        return nn.Conv2d(i, o, kernel_size, stride, padding, bias=bias, groups=i)
+
+    def forward(self, x):
+        if self.stride == 1:
+            x1, x2 = x.chunk(2, dim=1)  # 按照维度1进行split
+            out = torch.cat((x1, self.branch2(x2)), dim=1)
+        else:
+            out = torch.cat((self.branch1(x), self.branch2(x)), dim=1)
+        out = channel_shuffle(out, 2)
+        return out
+</code></pre><p>然后在<code>nn/modules/__init__.py</code>中导入上述类:</p><pre tabindex=0><code>from .transformer import (
+    AIFI,
+    ...
+    TransformerLayer,
+)
+from .shufflenetv2 import CBRM, Shuffle_Block
+
+__all__ = (
+    &#34;AIFI&#34;,
+    ...
+    &#34;CBRM&#34;,
+    &#34;Shuffle_Block&#34;
+)
+</code></pre><p>之后修改<code>nn/tasks.py</code>中的代码:</p><pre tabindex=0><code>from ultralytics.nn.modules import (
+    AIFI,
+    ...
+    CBRM,
+    Shuffle_Block
+)
+
+def parse_model(d, ch, verbose=True):
+    ...
+    base_modules = frozenset(
+        {
+            Classify,
+            Conv,
+            ...
+            CBRM,
+            Shuffle_Block
+        }
+    )
+</code></pre><p>除了将其放置在<code>base_modules</code>变量中,还可以使用如下的方式:</p><pre tabindex=0><code>    ...
+    elif m in frozenset({TorchVision, Index}):
+        c2 = args[0]
+        c1 = ch[f]
+        args = [*args[1:]]
+    elif m in (CBRM,Shuffle_Block):
+        c1, c2 = ch[f], args[0]
+        args = [c1,c2,*args[1:]]
+</code></pre><p>我们构建参数让其可以满足对应模块的参数,分别为输入通道数、输出通道数,其中输入参数的值是根据上一层传入的。</p><p>对此可以使用如下的代码查看每层的输入与输出维度:</p><pre tabindex=0><code>import torch
+from ultralytics import YOLO
+
+model = YOLO(&#34;yolo11.yaml&#34;).model
+model.eval()
+
+x = torch.randn(1,3,640,640)
+print(&#34;{:&lt;4} {:&lt;25} {:&gt;25} {:&gt;25}&#34;.format(&#34;Idx&#34;,&#34;Module&#34;,&#34;Input Shape&#34;,&#34;Output Shape&#34;))
+print(&#34;-&#34;*80)
+
+def hook_fn(module,input,output):
+	if module in model.model:
+		def extract_shape(o):
+			if isinstance(o, torch.Tensor):
+				return list(o.shape)
+			elif isinstance(o,(list,tuple)):
+				return [extract_shape(x) for x in o]
+			else:
+				return str(type(o))
+		input_shape = extract_shape(input)[0]
+		output_shape = extract_shape(output)
+		idx = list(model.model).index(module)
+		print(&#34;{:&lt;4} {:&lt;25} {:&lt;25} {:&gt;25}&#34;.format(idx,module.__class__.__name__,str(input_shape), str(output_shape)))
+
+hooks = [m.register_forward_hook(hook_fn) for m in model.model]
+
+_ = model(x)
+for h in hooks:
+	h.remove()
+</code></pre><p>之后在<code>cfg/models/11</code>目录下新建1个<code>yolo11n-shufflenetV2.yaml</code>的配置文件,其内容如下:</p><pre>
+nc: 80 # number of classes
+scales: # model compound scaling constants, i.e. 'model=yolo11n.yaml' will call yolo11.yaml with scale 'n'
+  # [depth, width, max_channels]
+  n: [0.50, 0.25, 1024] # summary: 181 layers, 2624080 parameters, 2624064 gradients, 6.6 GFLOPs
+  s: [0.50, 0.50, 1024] # summary: 181 layers, 9458752 parameters, 9458736 gradients, 21.7 GFLOPs
+  m: [0.50, 1.00, 512] # summary: 231 layers, 20114688 parameters, 20114672 gradients, 68.5 GFLOPs
+  l: [1.00, 1.00, 512] # summary: 357 layers, 25372160 parameters, 25372144 gradients, 87.6 GFLOPs
+  x: [1.00, 1.50, 512] # summary: 357 layers, 56966176 parameters, 56966160 gradients, 196.0 GFLOPs
+
+# YOLO11n backbone
+backbone:
+  # [from, repeats, module, args]
+  - [-1, 1, CBRM, [32]]              # 0-P2/4           160*160 
+  - [-1, 1, Shuffle_Block, [128, 2]] # 1-P3/8           80*80
+  - [-1, 3, Shuffle_Block, [128, 1]] # 2                80*80
+  - [-1, 1, Shuffle_Block, [256, 2]] # 3-P4/16          40*40
+  - [-1, 7, Shuffle_Block, [256, 1]] # 4                40*40
+  - [-1, 1, Shuffle_Block, [512, 2]] # 5-P5/32          20*20
+  - [-1, 3, Shuffle_Block, [512, 1]] # 6                20*20
+
+# YOLO11n head
+head:
+  - [-1, 1, nn.Upsample, [None, 2, "nearest"]]    # 11  40*40
+  - [[-1, 4], 1, Concat, [1]] # 12 cat backbone P4      40*40
+  - [-1, 2, C3k2, [512, False]] # 13                    40*40
+
+  - [-1, 1, nn.Upsample, [None, 2, "nearest"]]   # 14   80*80
+  - [[-1, 2], 1, Concat, [1]] #15 cat backbone P3       80*80
+  - [-1, 2, C3k2, [256, False]] # 16 (P3/8-small)       80*80
+
+  - [-1, 1, Conv, [256, 3, 2]]  #17                     40*40
+  - [[-1, 9], 1, Concat, [1]] #18 cat head P4          40*40
+  - [-1, 2, C3k2, [512, False]] # 19 (P4/16-medium)     40*40
+
+  - [-1, 1, Conv, [512, 3, 2]] # 20                     20*20
+  - [[-1, 6], 1, Concat, [1]] #21 cat head P5           20*20
+  - [-1, 2, C3k2, [1024, True]] # 22 (P5/32-large)      20*20
+  - [[12, 15, 18], 1, Detect, [nc]] # Detect(P3, P4, P5)
+</pre><p>我们需要根据Backbone的输出尺寸调整Concat模块对应的层数。比如第1个Concat其输出为40x40,因此拼接的是Backbone的第4层。而选择的是yolo11n模型,其width为0.25,因此输入均要乘以1/4。</p><p>最后就可以开始训练了:</p><pre tabindex=0><code>from ultralytics import YOLO
+
+model = YOLO(&#34;yolo11n-shufflenetV2.yaml&#34;)
+model.train(epochs=100,data=&#34;coco128.yaml&#34;)
+</code></pre><p>其网络输出如下:</p><pre>
+
+                   from  n    params  module                                       arguments
+  0                  -1  1       232  ultralytics.nn.modules.shufflenetv2.CBRM     [3, 8]
+  1                  -1  1       872  ultralytics.nn.modules.shufflenetv2.Shuffle_Block[8, 32, 2]
+  2                  -1  2      1504  ultralytics.nn.modules.shufflenetv2.Shuffle_Block[32, 32, 1]
+  3                  -1  1      3968  ultralytics.nn.modules.shufflenetv2.Shuffle_Block[32, 64, 2]
+  4                  -1  4     10112  ultralytics.nn.modules.shufflenetv2.Shuffle_Block[64, 64, 1]
+  5                  -1  1     14080  ultralytics.nn.modules.shufflenetv2.Shuffle_Block[64, 128, 2]
+  6                  -1  2     18304  ultralytics.nn.modules.shufflenetv2.Shuffle_Block[128, 128, 1]
+  7                  -1  1         0  torch.nn.modules.upsampling.Upsample         [None, 2, 'nearest']
+  8             [-1, 4]  1         0  ultralytics.nn.modules.conv.Concat           [1]
+  9                  -1  1     86720  ultralytics.nn.modules.block.C3k2            [192, 128, 1, False]
+ 10                  -1  1         0  torch.nn.modules.upsampling.Upsample         [None, 2, 'nearest']
+ 11             [-1, 2]  1         0  ultralytics.nn.modules.conv.Concat           [1]
+ 12                  -1  1     25952  ultralytics.nn.modules.block.C3k2            [160, 64, 1, False]
+ 13                  -1  1     36992  ultralytics.nn.modules.conv.Conv             [64, 64, 3, 2]
+ 14             [-1, 9]  1         0  ultralytics.nn.modules.conv.Concat           [1]
+ 15                  -1  1     86720  ultralytics.nn.modules.block.C3k2            [192, 128, 1, False]
+ 16                  -1  1    147712  ultralytics.nn.modules.conv.Conv             [128, 128, 3, 2]
+ 17             [-1, 6]  1         0  ultralytics.nn.modules.conv.Concat           [1]
+ 18                  -1  1    346112  ultralytics.nn.modules.block.C3k2            [256, 256, 1, True]
+ 19        [12, 15, 18]  1    464912  ultralytics.nn.modules.head.Detect           [80, [64, 128, 256]]
+YOLO11n-shufflenetV2 summary: 203 layers, 1,244,192 parameters, 1,244,176 gradients, 3.5 GFLOPs
+</pre><p>可以看到成功将Backbone替换为了ShuffleNetV2了。</p><p>参考视频:</p><blockquote><p><a href=https://www.bilibili.com/video/BV1gn8BzEEGE/>https://www.bilibili.com/video/BV1gn8BzEEGE/</a></p></blockquote><div class=reward><span>如果喜欢这篇文章或对您有帮助，可以：[☕] 请我喝杯咖啡 | [💓] 小额赞助</span><br><img src=https://zhuzhulang.github.io/blog/img/qr_alipay.jpg>
+<img src=https://zhuzhulang.github.io/blog/img/qr_wechat.png></div></article></div></div></div></div></div></div></main></div><script type=application/javascript src=https://zhuzhulang.github.io/blog/js/toc.js></script><link rel=stylesheet href=https://zhuzhulang.github.io/blog/css/toc.css></div><div class="footer container-xl width-full p-responsive"><div class="position-relative d-flex flex-row-reverse flex-lg-row flex-wrap flex-lg-nowrap flex-justify-center flex-lg-justify-between flex-sm-items-center pt-6 pb-2 mt-6 f6 text-gray border-top border-gray-light"><a aria-label=Homepage title=GitHub class="footer-octicon d-none d-lg-block mr-lg-4" href=https://zhuzhulang.github.io/blog/><svg height="24" class="octicon octicon-mark-github" viewBox="0 0 16 16" width="24"><path fill-rule="evenodd" d="M8 0C3.58.0.0 3.58.0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38.0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95.0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12.0.0.67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15.0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48.0 1.07-.01 1.93-.01 2.2.0.21.15.46.55.38A8.013 8.013.0 0016 8c0-4.42-3.58-8-8-8z"/></svg></a><ul class="list-style-none d-flex flex-wrap col-12 flex-justify-center flex-lg-justify-between mb-2 mb-lg-0"><li class="mr-3 mr-lg-0">✨ 原创不易，转载请注明作者和链接哦~</li><li class="mr-3 mr-lg-0">GitHub and the Invertocat logo are trademarks of <a href=https://github.com/>GitHub, Inc.</a></li></ul></div><div class="d-flex flex-justify-center pb-6"><span class="f6 text-gray-light"></span></div></div></body><script type=application/javascript src=https://zhuzhulang.github.io/blog/js/github-style.js></script><script src=https://cdn.jsdelivr.net/npm/fuse.js/dist/fuse.min.js></script><script type=application/javascript src=https://zhuzhulang.github.io/blog/js/search.js></script><script async src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js></script></html>
