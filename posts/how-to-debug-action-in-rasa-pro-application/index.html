@@ -1,0 +1,224 @@
+<!doctype html><html lang=zh-cn><head><meta charset=utf-8><meta name=viewport content="width=device-width"><script type=application/javascript src=https://zhuzhulang.github.io/blog/js/theme-mode.js></script><link rel=stylesheet href=https://zhuzhulang.github.io/blog/css/frameworks.min.css><link rel=stylesheet href=https://zhuzhulang.github.io/blog/css/github.min.css><link rel=stylesheet href=https://zhuzhulang.github.io/blog/css/github-style.css><link rel=stylesheet href=https://zhuzhulang.github.io/blog/css/light.css><link rel=stylesheet href=https://zhuzhulang.github.io/blog/css/dark.css><link rel=stylesheet href=https://zhuzhulang.github.io/blog/css/syntax.css><title>在Rasa Pro应用中调试执行动作 - 码力全开</title>
+<link rel=icon type=image/x-icon href=https://zhuzhulang.github.io/blog/images/github-mark.png><meta name=theme-color content="#1e2327"><meta name=description content="如何在Rasa Pro应用中调试其action"><meta name=keywords content='blog,ai,in action'><meta name=robots content="noodp"><link rel=canonical href=https://zhuzhulang.github.io/blog/posts/how-to-debug-action-in-rasa-pro-application/><meta name=twitter:card content="summary"><meta name=twitter:title content="在Rasa Pro应用中调试执行动作 - 码力全开"><meta name=twitter:description content="如何在Rasa Pro应用中调试其action"><meta name=twitter:site content="https://zhuzhulang.github.io/blog/"><meta name=twitter:creator content><meta name=twitter:image content="https://zhuzhulang.github.io/blog/"><meta property="og:type" content="article"><meta property="og:title" content="在Rasa Pro应用中调试执行动作 - 码力全开"><meta property="og:description" content="如何在Rasa Pro应用中调试其action"><meta property="og:url" content="https://zhuzhulang.github.io/blog/posts/how-to-debug-action-in-rasa-pro-application/"><meta property="og:site_name" content="在Rasa Pro应用中调试执行动作"><meta property="og:image" content="https://zhuzhulang.github.io/blog/"><meta property="og:image:width" content="2048"><meta property="og:image:height" content="1024"><meta property="article:published_time" content="2026-05-08 21:13:00 +0800 CST"></head><script type=text/javascript src="//api.wukongtongji.com/c?_=793054730599555072" async></script><body><div style=position:relative><header class="Header js-details-container Details px-3 px-md-4 px-lg-5 flex-wrap flex-md-nowrap open Details--on"><div class="Header-item mobile-none" style=margin-top:-4px;margin-bottom:-4px><a class=Header-link href=https://zhuzhulang.github.io/blog/><img class=octicon height=32 width=32 src=https://zhuzhulang.github.io/blog/images/github-mark-white.png></a></div><div class="Header-item d-md-none"><button class="Header-link btn-link js-details-target" type=button onclick='document.querySelector("#header-search").style.display=document.querySelector("#header-search").style.display=="none"?"block":"none"'><svg height="24" class="octicon octicon-three-bars" viewBox="0 0 16 16" width="24"><path fill-rule="evenodd" d="M1 2.75A.75.75.0 011.75 2h12.5a.75.75.0 110 1.5H1.75A.75.75.0 011 2.75zm0 5A.75.75.0 011.75 7h12.5a.75.75.0 110 1.5H1.75A.75.75.0 011 7.75zM1.75 12a.75.75.0 100 1.5h12.5a.75.75.0 100-1.5H1.75z"/></svg></button></div><div style=display:none id=header-search class="Header-item Header-item--full flex-column flex-md-row width-full flex-order-2 flex-md-order-none mr-0 mr-md-3 mt-3 mt-md-0 Details-content--hidden-not-important d-md-flex"><div class="Header-search header-search flex-auto js-site-search position-relative flex-self-stretch flex-md-self-auto mb-3 mb-md-0 mr-0 mr-md-3 scoped-search site-scoped-search js-jump-to"><div class=position-relative><form target=_blank id=search-form accept-charset=UTF-8 method=get autocomplete=off><label class="Header-search-label form-control input-sm header-search-wrapper p-0 js-chromeless-input-container header-search-wrapper-jump-to position-relative d-flex flex-justify-between flex-items-center"><input type=text class="Header-search-input form-control input-sm header-search-input jump-to-field js-jump-to-field js-site-search-focus js-site-search-field is-clearable" name=q placeholder=Search autocomplete=off></label></form></div></div></div><div class="Header-item Header-item--full flex-justify-center d-md-none position-relative"><a class=Header-link href=https://zhuzhulang.github.io/blog/><img class="octicon octicon-mark-github v-align-middle" height=32 width=32 src=https://zhuzhulang.github.io/blog/images/github-mark-white.png></a></div><div class=Header-item style=margin-right:0><a href=javascript:void(0) class="Header-link no-select" onclick=switchTheme()><svg style="fill:var(--color-profile-color-modes-toggle-moon)" class="no-select" viewBox="0 0 16 16" width="16" height="16"><path fill-rule="evenodd" clip-rule="evenodd" d="M4.52208 7.71754c3.05612.0 5.53362-2.47748 5.53362-5.5336C10.0557 1.93498 10.0392 1.68986 10.0074 1.44961 9.95801 1.07727 10.3495.771159 10.6474.99992c1.4679 1.12724 2.4141 2.90007 2.4141 4.89391.0 3.40575-2.7609 6.16667-6.16665 6.16667-2.94151.0-5.40199-2.0595-6.018122-4.81523C.794841 6.87902 1.23668 6.65289 1.55321 6.85451 2.41106 7.40095 3.4296 7.71754 4.52208 7.71754z"/></svg></a></div></header></div><div id=search-result class="container-lg px-3 new-discussion-timeline" style=display:none></div><div class=application-main><div><main><div class="gisthead pagehead bg-gray-light pb-0 pt-3 mb-4"><div class=px-0><div class="mb-3 d-flex px-3 px-md-3 px-lg-5"><div class="flex-auto min-width-0 width-fit mr-3"><div class=d-flex><div class="d-none d-md-block"><a class="avatar mr-2 flex-shrink-0" href=https://zhuzhulang.github.io/blog/><img class=avatar-user src=https://zhuzhulang.github.io/blog/images/avatar.jpg width=32 height=32></a></div><div class="d-flex flex-column"><h1 class="break-word f3 text-normal mb-md-0 mb-1"><span class=author><a href=https://zhuzhulang.github.io/blog/>码力全开</a>
+</span><span class=path-divider>/</span>
+<strong class="css-truncate css-truncate-target mr-1" style=max-width:410px><a href=https://zhuzhulang.github.io/blog/posts/how-to-debug-action-in-rasa-pro-application/>在Rasa Pro应用中调试执行动作</a></strong></h1><div class="note m-0">Created <relative-time datetime="Fri, 08 May 2026 21:13:00 +0800" class=no-wrap>Fri, 08 May 2026 21:13:00 +0800</relative-time>
+<span class=file-info-divider></span>
+Modified <relative-time datetime="Fri, 08 May 2026 21:25:51 +0800" class=no-wrap>Fri, 08 May 2026 21:25:51 +0800</relative-time></div></div></div></div></div></div></div><div class="container-lg px-3 new-discussion-timeline"><div class="repository-content gist-content"><div><div class="js-gist-file-update-container js-task-list-container file-box"><div id=file-pytest class="file my-2"><div id=post-header class="file-header d-flex flex-md-items-center flex-items-start sticky-header" style=z-index:2><div class="file-info d-flex flex-md-items-center flex-items-start flex-order-1 flex-auto"><div class="text-mono f6 flex-auto pr-3 flex-order-2 flex-md-order-1 mt-2 mt-md-0"><summary id=toc-toggle onclick=clickToc() class="btn btn-octicon m-0 mr-2 p-2"><svg aria-hidden="true" viewBox="0 0 16 16" height="16" width="16" class="octicon octicon-list-unordered"><path fill-rule="evenodd" d="M2 4a1 1 0 100-2 1 1 0 000 2zm3.75-1.5a.75.75.0 000 1.5h8.5a.75.75.0 000-1.5h-8.5zm0 5a.75.75.0 000 1.5h8.5a.75.75.0 000-1.5h-8.5zm0 5a.75.75.0 000 1.5h8.5a.75.75.0 000-1.5h-8.5zM3 8A1 1 0 111 8a1 1 0 012 0zm-1 6a1 1 0 100-2 1 1 0 000 2z"/></svg></summary><details-menu class=SelectMenu id=toc-details style="display: none;"><div class="SelectMenu-modal rounded-3 mt-1" style=max-height:340px><div class="SelectMenu-list SelectMenu-list--borderless p-2" style=overscroll-behavior:contain id=toc-list></div></div></details-menu>2163 Words
+<span class=file-info-divider></span>
+4 min
+<span class=file-info-divider></span>
+<svg fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" viewBox="0 0 24 20" height="20"><path d="M12 10c-7 0-11 7-11 7s3.5 7 11 7 11-7 11-7-4-7-11-7z"/><circle r="4" cy="16" cx="12"/></svg>
+<span id=busuanzi_container_page_pv><span id=busuanzi_value_page_pv></span></span></div><div class="file-actions flex-order-2 pt-0"><a class="muted-link mr-3" href=https://zhuzhulang.github.io/blog/tags/ai><svg class="octicon octicon-tag" viewBox="0 0 16 16" width="16" height="16"><path fill-rule="evenodd" d="M2.5 7.775V2.75a.25.25.0 01.25-.25h5.025a.25.25.0 01.177.073l6.25 6.25a.25.25.0 010 .354l-5.025 5.025a.25.25.0 01-.354.0l-6.25-6.25A.25.25.0 012.5 7.775zm-1.5.0V2.75C1 1.784 1.784 1 2.75 1h5.025c.464.0.91.184 1.238.513l6.25 6.25a1.75 1.75.0 010 2.474l-5.026 5.026a1.75 1.75.0 01-2.474.0l-6.25-6.25A1.75 1.75.0 011 7.775zM6 5a1 1 0 100 2 1 1 0 000-2z"/></svg>
+AI</a></div></div></div><article class="markdown-body entry-content container-lg"><aside class=toc-wrapper><nav id=TableOfContents></nav></aside><div class="Box-body px-5 pb-5" style=z-index:1><p>这里将介绍如何在Rasa Pro应用中调试其action,从而更好地知道程序是否正常运行。</p><p>假设我们有1个动作是询问天气,我们可以通过如下方式创建应用:</p><pre>
+export RASA_LICENSE=xxxxx
+rasa init
+</pre><p>在创建的项目actions目录下创建1个<code>ask_weather.py</code>的模块,其内容如下:</p><pre tabindex=0><code>import random
+from typing import Any, Text, Dict, List
+from rasa_sdk import Action, Tracker
+from rasa_sdk.executor import CollectingDispatcher
+import requests
+
+class ActionWeatherForecast(Action):
+    &#34;&#34;&#34;自定义动作：查询指定城市的天气预报&#34;&#34;&#34;
+
+    def name(self) -&gt; Text:
+        return &#34;action_weather_forecast&#34;
+
+    def run(self, dispatcher: CollectingDispatcher,
+            tracker: Tracker,
+            domain: Dict[Text, Any]) -&gt; List[Dict[Text, Any]]:
+        # 1. 从tracker中获取槽位值（例如城市名称）
+        # 假设在domain.yml中定义了名为 &#39;city&#39; 的slot
+        city = tracker.get_slot(&#34;city&#34;)
+        if not city:
+            dispatcher.utter_message(text=&#34;请问您想查询哪个城市的天气？&#34;)
+            return []
+        # 2. 调用外部天气API (此处以模拟数据或真实API为例)
+        # 注意：实际生产中请替换为真实的API Key和URL
+        try:
+            # 模拟返回数据
+            weather_info = self._get_mock_weather(city)
+            # 3. 构造回复消息
+            temperature = weather_info.get(&#39;temperature&#39;, &#39;未知&#39;)
+            description = weather_info.get(&#39;description&#39;, &#39;未知&#39;)
+            response_text = f&#34;{city}今天的天气是{description}，气温约为{temperature}摄氏度。&#34;
+            # 4. 发送消息给用户
+            dispatcher.utter_message(text=response_text)
+        except Exception as e:
+            dispatcher.utter_message(text=f&#34;抱歉，查询{city}的天气时出错了，请稍后再试。&#34;)
+
+        return []
+
+    def _get_mock_weather(self, city: str) -&gt; dict:
+        &#34;&#34;&#34;模拟获取天气数据，实际项目中应替换为真实的API调用&#34;&#34;&#34;
+        if city == &#34;北京&#34;:
+            temperature = 26
+            description = &#34;阴天&#34;
+        elif city == &#34;广州&#34;:
+            temperature = 30
+            description = &#34;晴朗,紫外线很强&#34;
+        else:
+            temperature = random.randint(15,40)
+            description = random.choices([&#34;晴朗&#34;,&#34;雨天&#34;,&#34;大雪&#34;,&#34;大雨&#34;,&#34;阴凉&#34;,&#34;大风&#34;,&#34;雾霾&#34;])[0]
+        # 简单的模拟逻辑
+        return {
+            &#34;temperature&#34;: temperature,
+            &#34;description&#34;: description
+        }
+</code></pre><p>同样在domain目录下新建1个<code>ask_weather.yml</code>的配置文件,其内容如下:</p><pre tabindex=0><code>version: &#34;3.1&#34;
+
+intents:
+  - ask_weather
+  # ... 其他意图
+
+entities:
+  - city
+  # ... 其他实体
+
+slots:
+  city:
+    type: text
+    influence_conversation: false
+    mappings:
+      - type: from_entity
+        entity: city
+
+responses:
+  # ... 其他回复模板
+
+actions:
+  - action_weather_forecast  # 这里必须与代码中 name() 返回的值完全一致
+</code></pre><p>之后修改项目目录下<code>endpoints.yml</code>中配置:</p><pre tabindex=0><code>action_endpoint:
+  url: &#34;http://localhost:5055/webhook&#34;
+  actions_module: &#34;actions&#34;
+</code></pre><p>其中url是调试的URL地址,<code>actions_module</code>是动作模块的目录。</p><p>接着执行如下的命令开启actions调试服务:</p><pre>
+$ rasa run actions --auto-reload
+2026-05-08 21:22:10 INFO     rasa.tracing.backend_tracing_config  - [info     ] No backend tracing configuration found in endpoints.yml. Supported backend tracing types are 'jaeger' and 'otlp'. Backend tracing will not be configured. event_key=endpoint.read.no_backend_tracing_config
+2026-05-08 21:22:11 INFO     rasa_sdk.executor  - Registered function for 'add_contact'.
+2026-05-08 21:22:11 INFO     rasa_sdk.executor  - Registered function for 'action_weather_forecast'.
+2026-05-08 21:22:11 INFO     rasa_sdk.executor  - Registered function for 'list_contacts'.
+2026-05-08 21:22:11 INFO     rasa_sdk.executor  - Registered function for 'remove_contact'.
+2026-05-08 21:22:11 INFO     rasa_sdk.endpoint  - Starting action endpoint server...
+2026-05-08 21:22:11 INFO     rasa_sdk.endpoint  - Starting plugins...
+2026-05-08 21:22:11 INFO     rasa_sdk.endpoint  - Action endpoint is up and running on http://0.0.0.0:5055
+2026-05-08 21:22:11 INFO     rasa_sdk.tracing.config  - No endpoint for tracing type available in endpoints.yml,tracing will not be configured.
+2026-05-08 21:22:11 INFO     sanic.server  - Starting worker [19732]
+</pre><p>可以看到成功注册了<code>action_weather_forecast</code>动作。</p><p>最后编写如下的脚本:</p><pre tabindex=0><code>import requests
+import json
+
+def test_weather_action():
+    &#34;&#34;&#34;
+    测试 Rasa Action Server 中的 action_weather_forecast 接口。
+    &#34;&#34;&#34;
+    # 1. Action Server 的端点 URL (根据您的附件内容)
+    action_server_url = &#34;http://localhost:5055/webhook&#34;
+
+    # 2. 构建符合 OpenAPI 规范的请求体
+    # 模拟 Rasa Core 发送的请求，其中包含对话状态 (tracker) 和要执行的动作名。
+    payload = {
+        &#34;next_action&#34;: &#34;action_weather_forecast&#34;,  # 要执行的自定义动作名称
+        &#34;sender_id&#34;: &#34;test_user_001&#34;,              # 模拟用户ID
+        &#34;tracker&#34;: {
+            &#34;sender_id&#34;: &#34;test_user_001&#34;,
+            &#34;slots&#34;: {
+                &#34;city&#34;: &#34;上海&#34;  # 假设用户已提供了城市信息，并已存入名为&#39;city&#39;的槽位
+            },
+            # &#34;latest_message&#34;: {
+            #     &#34;intent&#34;: {&#34;name&#34;: &#34;ask_weather&#34;, &#34;confidence&#34;: 0.99},
+            #     &#34;entities&#34;: [{&#34;entity&#34;: &#34;city&#34;, &#34;value&#34;: &#34;北京&#34;}],
+            #     &#34;text&#34;: &#34;北京天气怎么样？&#34;
+            # },
+            # &#34;latest_action_name&#34;: &#34;action_listen&#34;,
+            # &#34;events&#34;: [],
+            # &#34;paused&#34;: False,
+            # &#34;followup_action&#34;: None,
+            # &#34;active_loop&#34;: {},
+            # &#34;latest_input_channel&#34;: &#34;rest&#34;
+        },
+        &#34;domain&#34;: {
+            # &#34;config&#34;: {&#34;store_entities_as_slots&#34;: True},
+            # &#34;intents&#34;: [{&#34;ask_weather&#34;: {&#34;use_entities&#34;: True}}],
+            # &#34;entities&#34;: [&#34;city&#34;],
+            # &#34;slots&#34;: {
+            #     &#34;city&#34;: {
+            #         &#34;type&#34;: &#34;text&#34;,
+            #         &#34;auto_fill&#34;: True,
+            #         &#34;initial_value&#34;: None
+            #     }
+            # },
+            # &#34;responses&#34;: {},
+            # &#34;actions&#34;: [&#34;action_weather_forecast&#34;, &#34;utter_greet&#34;, &#34;action_listen&#34;]
+        }
+    }
+
+    # 3. 设置请求头
+    headers = {
+        &#39;Content-Type&#39;: &#39;application/json&#39;,
+        &#39;Accept&#39;: &#39;application/json&#39;
+    }
+
+    try:
+        # 4. 发送 POST 请求
+        print(f&#34;正在向 Action Server 发送测试请求: {action_server_url}&#34;)
+        response = requests.post(action_server_url, data=json.dumps(payload), headers=headers, timeout=10)
+
+        # 5. 处理响应
+        print(f&#34;响应状态码: {response.status_code}&#34;)
+        if response.status_code == 200:
+            result = response.json()
+            print(&#34;✅ 动作执行成功！&#34;)
+            print(&#34;响应内容:&#34;)
+            print(json.dumps(result, indent=2, ensure_ascii=False))
+
+            # 解析并打印机器人回复
+            if &#39;responses&#39; in result and result[&#39;responses&#39;]:
+                for resp in result[&#39;responses&#39;]:
+                    if &#39;text&#39; in resp:
+                        print(f&#34;\n🤖 机器人回复: {resp[&#39;text&#39;]}&#34;)
+            else:
+                print(&#34;⚠️  响应中未包含直接回复文本，请检查动作返回的 `responses` 字段。&#34;)
+
+        elif response.status_code == 400:
+            error = response.json()
+            print(f&#34;❌ 动作执行被拒绝: {error.get(&#39;error&#39;, &#39;未知错误&#39;)}&#34;)
+        elif response.status_code == 500:
+            print(&#34;❌ Action Server 内部执行出错，请检查动作代码日志。&#34;)
+        else:
+            print(f&#34;❌ 收到意外状态码: {response.status_code}, 响应文本: {response.text}&#34;)
+
+    except requests.exceptions.ConnectionError:
+        print(f&#34;❌ 无法连接到 Action Server，请确保已在运行 `rasa run actions` 并监听在 {action_server_url}&#34;)
+    except requests.exceptions.Timeout:
+        print(&#34;❌ 请求超时，请检查 Action Server 状态。&#34;)
+    except Exception as e:
+        print(f&#34;❌ 测试过程中发生未知错误: {e}&#34;)
+
+if __name__ == &#34;__main__&#34;:
+    # 运行测试前，请确保：
+    # 1. 您的自定义动作代码已正确放置在 actions/ 目录下。
+    # 2. 已通过 `rasa run actions` 启动了 Action Server。
+    test_weather_action()
+</code></pre><p>执行上述脚本可以看到类似如下的输出:</p><pre>
+正在向 Action Server 发送测试请求: http://localhost:5055/webhook
+响应状态码: 200
+✅ 动作执行成功！
+响应内容:
+{
+  "events": [],
+  "responses": [
+    {
+      "text": "上海今天的天气是大雨，气温约为26摄氏度。",
+      "buttons": [],
+      "elements": [],
+      "custom": {},
+      "template": null,
+      "response": null,
+      "image": null,
+      "attachment": null
+    }
+  ]
+}
+
+� 机器人回复: 上海今天的天气是大雨，气温约为26摄氏度。
+</pre><p>这样我们就成功在Rasa应用中通过RESTful API的方式对actions进行了执行。</p><div class=reward><span>如果喜欢这篇文章或对您有帮助，可以：[☕] 请我喝杯咖啡 | [💓] 小额赞助</span><br><img src=https://zhuzhulang.github.io/blog/img/qr_alipay.jpg>
+<img src=https://zhuzhulang.github.io/blog/img/qr_wechat.png></div></article></div></div></div></div></div></div></main></div><script type=application/javascript src=https://zhuzhulang.github.io/blog/js/toc.js></script><link rel=stylesheet href=https://zhuzhulang.github.io/blog/css/toc.css></div><div class="footer container-xl width-full p-responsive"><div class="position-relative d-flex flex-row-reverse flex-lg-row flex-wrap flex-lg-nowrap flex-justify-center flex-lg-justify-between flex-sm-items-center pt-6 pb-2 mt-6 f6 text-gray border-top border-gray-light"><a aria-label=Homepage title=GitHub class="footer-octicon d-none d-lg-block mr-lg-4" href=https://zhuzhulang.github.io/blog/><svg height="24" class="octicon octicon-mark-github" viewBox="0 0 16 16" width="24"><path fill-rule="evenodd" d="M8 0C3.58.0.0 3.58.0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38.0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95.0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12.0.0.67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15.0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48.0 1.07-.01 1.93-.01 2.2.0.21.15.46.55.38A8.013 8.013.0 0016 8c0-4.42-3.58-8-8-8z"/></svg></a><ul class="list-style-none d-flex flex-wrap col-12 flex-justify-center flex-lg-justify-between mb-2 mb-lg-0"><li class="mr-3 mr-lg-0">✨ 原创不易，转载请注明作者和链接哦~</li><li class="mr-3 mr-lg-0">GitHub and the Invertocat logo are trademarks of <a href=https://github.com/>GitHub, Inc.</a></li></ul></div><div class="d-flex flex-justify-center pb-6"><span class="f6 text-gray-light"></span></div></div></body><script type=application/javascript src=https://zhuzhulang.github.io/blog/js/github-style.js></script><script src=https://cdn.jsdelivr.net/npm/fuse.js/dist/fuse.min.js></script><script type=application/javascript src=https://zhuzhulang.github.io/blog/js/search.js></script><script async src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js></script></html>
